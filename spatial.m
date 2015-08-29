@@ -37,8 +37,8 @@ function [f,theta,phi]=spatial(w,tt,pp)
 
 		f=zeros(size(theta)); % mesh answer to be accumulated
 
-		disp(sprintf('\n* Progress\n'))
-		tic
+% 		disp(sprintf('\n* Progress\n'))
+% 		tic
 
 		for l=[0:L_max]
 			Sl=legendre(l,cos(tt),'sch'); % [S_l^0; ...; S_l^l](l,tt)
@@ -53,12 +53,12 @@ function [f,theta,phi]=spatial(w,tt,pp)
 
 				Ylm=(-1)^m*NSl*kron(ones(size(pp)),Slm).*exp(1j*m*phi);
 				if m==0
-					f=f+wlm*Ylm;
+					f=f+wlm*sqrt(2)*Ylm;
 				else
 					f=f+wlm*Ylm+wlm1*(-1)^m*conj(Ylm);
 				end
 			end
-			disp(sprintf('%6d in seconds: %.2f', l, toc))
+% 			disp(sprintf('%6d in seconds: %.2f', l, toc))
 		end
 		return;
 	end % SEPARABLE CASE
