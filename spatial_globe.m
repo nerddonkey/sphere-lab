@@ -1,4 +1,8 @@
 function [f,theta,phi]=spatial_globe(L_max,ntt,npp,filename)
+%spatial_globe reads files in the l m C S real spherical harmonic format
+% and generates the spatial function
+% For data see https://geodesy.curtin.edu.au/research/models/Earth2012/
+% or http://www.ipgp.fr/~wieczor/SH/SH.html
 	Q_max=round((L_max+2)*(L_max+1)/2); % number of m>=0 spherical harmonics
 	N_max=(L_max+1)^2; % total number of spherical harmonics
 	disp(sprintf('\n* Numbers of Coefficients\n'))
@@ -51,5 +55,7 @@ function [f,theta,phi]=spatial_globe(L_max,ntt,npp,filename)
 	% evaluate the spatial function on mesh
 	tt=linspace(0,pi,ntt);
 	pp=linspace(0,2*pi,npp);
-	[f,theta,phi]=spatial(w,tt,pp);
+	[f,theta,phi]=spatial(w,tt,pp,1);
+	maxF=max(abs(f(:)));
+ 	f=f/maxF; % normalize entries to interval [-1.0,1.0]
 end

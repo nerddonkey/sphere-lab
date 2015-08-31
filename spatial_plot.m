@@ -1,4 +1,4 @@
-function spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype,edgeColor)
+function [s]=spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype)
 	switch plottype
 		case 0
 			F=abs(G).^2;
@@ -11,8 +11,8 @@ function spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype,edgeColor)
 		otherwise
 			F=real(G);
 	end
-	maxF=max(max(abs(F)));
-	F=F/maxF; % normalize entries to interval [-1.0,1.0]
+% 	maxF=max(max(abs(F)));
+% 	F=F/maxF; % normalize entries to interval [-1.0,1.0]
 
 	% make radius<=1 an affine mapping of the spherical harmonic value
 	radius=abs(ref_sphere + bump_height*F)/(ref_sphere+bump_height);
@@ -28,7 +28,6 @@ function spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype,edgeColor)
 
 	s=surf(x,y,z,F); % last argument determines colormap
 	s.LineWidth=0.1; % for finer lines in printing/png
-	s.EdgeColor=edgeColor; % no lines
 
 	fig=gcf;
 	fig.Position(3)=450;
@@ -36,6 +35,7 @@ function spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype,edgeColor)
 
 	fa=fig.CurrentAxes;
 
+	delete(findall(gcf,'Type','light')) % remove existing lights
 	light; lightangle(260,-45) % add 2 lights
 	lighting gouraud % preferred lighting for a curved surface
 	view(40,30) % set viewpoint
@@ -44,7 +44,8 @@ function spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype,edgeColor)
 	axis([-maxa maxa -maxa maxa -maxa maxa]);
 	axis off
 
-	c=colorbar('position',[0.01 0.75 0.03 0.22]);
+	delete(findall(gcf,'Type','colorbar')) % remove existing lcolorbars
+	c=colorbar('position',[0.03 0.75 0.03 0.22]);
 	c.Ticks=[-1:0.5:1];
  	c.TickLabelInterpreter='latex';
 	c.TickLabels={'$-1$','','$0$','','$1$'};
@@ -58,10 +59,6 @@ function spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype,edgeColor)
 			c.Limits=[-1,1];
 	end
 
- 	camzoom(1.15) % zoom into scene
+	set(fa, 'CameraViewAngle', 9) % zoom into scene
  	axes(fa); rotate3d on % setup for for gui interaction
-
- 	% output to png file to existing figures directory
-	set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
-	saveas(gcf,'test','png')
 end
