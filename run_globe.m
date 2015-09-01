@@ -17,14 +17,14 @@ function []=run_Globe
 	s=spatial_plot(f,theta,phi,0.05,1.0,2);
 	s.EdgeColor='none'; % no lines
 
-% 	mars='MarsTopo2600.shape';
+	mars='MarsTopo2600.shape';
 % 	[f,theta,phi]=spatial_globe(L_max,ntt,npp,mars);
 % 	colormap('pink')
 % 	spatial_plot(f,theta,phi,0.1,1.0,2,'none');
 
 	venus='VenusTopo719.shape';
 
-% 	moon='MoonTopo2600p.shape';
+	moon='MoonTopo2600p.shape';
 % 	[f,theta,phi]=spatial_globe(L_max,ntt,npp,moon);
 % 	colormap('bone')
 % 	spatial_plot(f,theta,phi,0.02,1.0,2,'none');

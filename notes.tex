@@ -1,14 +1,12 @@
 \documentclass[a4paper,10pt]{article}
 
 \usepackage[margin=20mm]{geometry}
-
-
 \usepackage{amsmath,amsthm,amssymb}
 \usepackage{mathtools}
 \usepackage{xcolor}
 
 \newcommand{\dfn}{\triangleq}
- 
+
 \begin{document}
 
 \section{Spherical Harmonics}
@@ -53,6 +51,8 @@ that is,
 			P_{\ell}^{m}(z) &m>0\quad (m\leq\ell)
 		\end{cases}
 \]
+(available in MATLAB as {\tt\color{blue}legendre(l,m,'sch')}.
+
 In summary, the normalized associated Legendre functions and not the standard associated Legendre functions should be used when computing the spherical harmonics.
 
 \subsection{Symmetry}
@@ -70,7 +70,7 @@ In summary, with a few sign flips we can get the negative order spherical harmon
 Define
 \[
 	S_{\ell}^{m}(z)\dfn(-1)^{m}\sqrt{\frac{2(\ell-m)!}{(\ell+m)!}}\,
-			P_{\ell}^{m}(z),\quad m\geq0\quad (m\leq\ell)
+		P_{\ell}^{m}(z),\quad m\geq0\quad (m\leq\ell)
 \]
 and so we have
 \begin{equation}
@@ -81,7 +81,7 @@ and so we have
 			S\!P_{\ell}^{m}(z) &m>0
 		\end{cases}
 \end{equation}
-in terms of the Schmidt semi-normalized Legendre functions. Further define
+in terms of the Schmidt semi-normalized Legendre functions (available in MATLAB as {\tt\color{blue}legendre(l,m,'sch')}. Further define
 \[
 	Q_{\ell}\dfn\sqrt{\frac{2\ell+1}{8\pi}}
 \]
@@ -99,19 +99,24 @@ Then we have
 
 \subsubsection{MATLAB implementation}
 
-The Schmidt semi-normalized Legendre functions are available in MATLAB so we only need to modify the $m=0$ case, \eqref{eqn:sps}.  The following code computes $Y_{\ell}^{m}(\theta,\varphi)$ for $\ell\geq0$ and $m\in\{-\ell,\dotsc,\ell\}$:
+The Schmidt semi-normalized Legendre functions are available in MATLAB so we only need to modify the $m=0$ case, \eqref{eqn:sps}.  The following code computes $Y_{\ell}^{m}(\theta,\varphi)$ for $\ell\geq0$ and $m\in\{-\ell,\dotsc,\ell\}$ on a separable grid in $\theta$ and $\phi$:
 \color{blue}\begin{verbatim}
-Sl=legendre(l,cos(theta),'sch');
-Sl(1,:)=SPl(1,:)*sqrt(2); % m=0 adjustment
-Ql=sqrt((2*l+1)/(8*pi));
-Slm=Sl(abs(m)+1,:)'; % pull out S_l^|m| (evaluated at theta)
-Ylm=(-1)^m*Ql*Slm*exp(1j*abs(m)*phi);
-if m<0
-   Ylm=(-1)^m*conj(Ylm);
-end
-\end{verbatim}\color{black}
+function [Ylm,theta,phi]=sphereHarm(l,m,tt,pp)
+%sphereHarm spherical harmonic of degree l and order m
+   if isvector(tt) && isvector(pp) && abs(m)<=l && l>=0
+      tt=tt(:)'; pp=pp(:)'; % ensure they are row vectors
+      [theta,phi]=ndgrid(tt,pp);
+      Sl=legendre(l,cos(tt),'sch');
+      Sl(1,:)=Sl(1,:)*sqrt(2); % m=0 adjustment
+      Ql=sqrt((2*l+1)/(8*pi));
+      Slm=Sl(abs(m)+1,:)'; % pull out S_l^|m|
+      Ylm=(-1)^m*Ql*kron(ones(size(pp)),Slm).*exp(1j*abs(m)*phi);
+      if m<0
+         Ylm=(-1)^m*conj(Ylm);
+      end
+   else
+      error('** invalid inputs or out-of-range')
+   end
+end\end{verbatim}\color{black}
 
 \end{document}
-
-
-

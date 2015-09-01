@@ -6,4 +6,3 @@ function [f,theta,phi]=spatial_shn(n,tt,pp)
 	w(n)=1;
 	[f,theta,phi]=spatial(w,tt,pp,0);
 end
-                     

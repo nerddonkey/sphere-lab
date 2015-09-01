@@ -1,57 +1,76 @@
 function run_SlepianD
 %run_SlepianD compute and plot dominant Slepian eigenfunction on
 % the sphere for a hardwired region and hardwired bandwidth
-   L_max=15;
-   deginc=2.0;
+	L_max=8;
+	intginc=0.1; % fine grid for integration
+	plotinc=2.0; % coarse grid for plotting
 
-	% Sub-region 1 R2
-   tt1=[30:deginc:60]*pi/180;
-   pp1=[-70:deginc:-10]*pi/180;
- 	D1=SlepianD(L_max,tt1,pp1);
+	% (disjoint) subregions
+	tr=[30 60; 20 70; 80 110];
+	pr=[-70 -10; 0 40; -70 -10];
 
-	% Sub-region 2 R1
-   tt2=[20:deginc:70]*pi/180;
-   pp2=[0:deginc:40]*pi/180;
-	D2=SlepianD(L_max,tt2,pp2);
+	N_max=(L_max+1)^2;
+	D=zeros(N_max,N_max);
 
-	% D matrix for the union of (disjoint) subregions R=R1+R2
-   D=D1+D2;
-	fprintf('Size of D matrix: %d x %d\n', size(D))
+	for r=1:size(tr,1) % loop over subregions
+		tt=(tr(r,1):intginc:tr(r,2))*pi/180;
+		pp=(pr(r,1):intginc:pr(r,2))*pi/180;
+		D=D+SlepianD(L_max,tt,pp);
+	end
 
-	% dominant eigenvector in spectral domain
-	[V,lambda]=eig(D);
-	fprintf('Largest Eigenvalue: %8.6f\n', lambda(end,end))
-	w=V(:,end);
+	fprintf('\n@@ Size of D matrix: %dx%d\n', size(D))
+
+	% dominant eigenvector w with eigenvalue lambda in spectral domain
+	[V,lamD]=eig(D); % eigenvalue
+	lambda=lamD(end,end);
+	fprintf('@@ Largest Eigenvalue: %8.6f\n',lambda)
+	w=V(:,end); % eigenvector
+	w=w/norm(w); % normalize eigenvector (superfluous)
 
 	% dominant eigenfunction in spatial domain
-	tt=[0:deginc:180]*pi/180;
-	pp=[0:deginc:360]*pi/180;
-	[slepian,theta,phi]=spatial(w,tt,pp,0);
-	maxSlepian=max(abs(slepian(:)));
-	slepian=slepian/maxSlepian; % normalize entries to interval [-1.0,1.0]
+	tt=(0:intginc:180)*pi/180;
+	pp=(0:intginc:360)*pi/180;
+	[slepian,~,~]=spatial(w,tt,pp,0);
+	maxSlepian=max(abs(slepian(:))); % normalization to [-1.0,1.0] for plotting
+
+	% compute energy in spatial domain
+	fprintf('@@ Spectral Energy: %8.6f\n',norm(w))
+	fprintf('@@ Spatial Energy: %8.6f (theory %8.6f)\n',spatialEnergy(slepian,tt,pp),norm(w))
 
 	% plot eigenfunction in spatial domain
 	close
-	plottype=1;
 	bump_height=0.2;
 	ref_sphere=1.0;
-	s=spatial_plot(slepian,theta,phi,bump_height,ref_sphere,plottype);
+	plottype=1;
+
+	tt=(0:plotinc:180)*pi/180;
+	pp=(0:plotinc:360)*pi/180;
+	[slepian,theta,phi]=spatial(w,tt,pp,0);
+	s=spatial_plot(slepian/maxSlepian,theta,phi,bump_height,ref_sphere,plottype);
 	s.EdgeColor='none'; % no lines
 	s.FaceAlpha=0.4;
 	colormap(copper)
 
 	hold on
 
-	% highlight eigenfunction with region R
-	[slepian1,theta,phi]=spatial(w,tt1,pp1,0);
-	slepian1=slepian1/maxSlepian;
-	spatial_plot(slepian1,theta,phi,bump_height,ref_sphere,plottype);
+	% Compute energy in sub-regions
+	lambda_est=0;
+	for r=1:size(tr,1) % loop over subregions (fine grid)
+		tt=(tr(r,1):intginc:tr(r,2))*pi/180;
+		pp=(pr(r,1):intginc:pr(r,2))*pi/180;
+		[reg,~,~]=spatial(w,tt,pp,1);
+		lambda_est=lambda_est+spatialEnergy(reg,tt,pp);
+	end
 
-	[slepian2,theta,phi]=spatial(w,tt2,pp2,0);
-	slepian2=slepian2/maxSlepian;
-	spatial_plot(slepian2,theta,phi,bump_height,ref_sphere,plottype);
+	% Plot sub-regions computation
+	for r=1:size(tr,1) % loop over subregions (coarse grid)
+		tt=(tr(r,1):plotinc:tr(r,2))*pi/180;
+		pp=(pr(r,1):plotinc:pr(r,2))*pi/180;
+		[reg,theta,phi]=spatial(w,tt,pp,1);
+		spatial_plot(reg/maxSlepian,theta,phi,bump_height,ref_sphere,plottype);
+	end
 
-	llabel=sprintf('$L_{\\mathrm{max}}=%d$ $\\lambda=%8.6f$', L_max, lambda(end,end));
+	llabel=sprintf('$L_{\\mathrm{max}}=%d$ $\\lambda=%8.6f$',L_max,lambda);
 	delete(findall(gcf,'Tag','myLabel'));
 	a=annotation('textbox',[0.71,0.89,0.28,0.1],'String',llabel);
 	a.Interpreter='latex';
@@ -59,12 +78,23 @@ function run_SlepianD
 	a.LineStyle='none';
 	a.Tag='myLabel';
 
+	fprintf('@@ Region Energy: %8.6f (theory %8.6f)\n',lambda_est,lambda)
+
 	hold off
 
- 	% output to png file to current directory
-	outname=sprintf('slep_%02d', L_max);
+	% output to png file to current directory
+	outname=sprintf('figs/slep_%02d', L_max);
 	set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
 	saveas(gcf,outname,'png')
+end
+
+function [e]=spatialEnergy(f,tt,pp)
+	e=trapSphereR(abs(f).^2,tt,pp);
+end
+
+function [I]=trapSphereR(f,tt,pp)
+	fs=bsxfun(@times,f,sin(tt(:)));
+	I=trapz(pp,trapz(tt,fs,1));
 end
 
 % convert -delay 50 -loop 0 slep*.png slep.gif
