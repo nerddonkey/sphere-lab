@@ -3,12 +3,12 @@ function [D]= SlepianD(L_max,tt,pp)
 % to do: use Hermitian property to roughly halve the computation
 	N_max=(L_max+1)^2;
 	D=zeros(N_max,N_max); % pre-allocate D
-	progressbar(0,0)
+	progressbar('row index','column index')
 	for r=1:N_max % rows
 		progressbar([],0)
 		for c=1:N_max % columns
 			D(r,c)=SlepianDrc(r,c,tt,pp);
-			progressbar([],c/N_max)
+			progressbar((r-1)/N_max+c/N_max^2,c/N_max)
 		end
 		progressbar(r/N_max,[])
 	end

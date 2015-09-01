@@ -1,4 +1,4 @@
-function [f,theta,phi]=spatial(ww,tt,pp,useProgressBar)
+function [f,theta,phi]=spatial(w,tt,pp,useProgressBar)
 %spatial performs the inverse spherical harmonic transform. The spherical harmonic
 % coefficients are provided in vector w which is organized in the (l,m): (0,0)
 % (1,-1) (1,0) (1,1) (2,-2) ... ordering.  Inputs tt and pp specify the theta and
@@ -18,13 +18,14 @@ function [f,theta,phi]=spatial(ww,tt,pp,useProgressBar)
 % assume separability.
 %
 % test for errors
-	if ~isvector(ww)
+	if ~isvector(w)
 	  error('weight is not a vector')
 	end
 
-	L_max=ceil(sqrt(numel(ww)))-1;
-	w=zeros((L_max+1)^2,1); % column vector of zeros
-	w(1:numel(ww))=ww(:);
+	L_max=ceil(sqrt(numel(w)))-1;
+	ww=zeros((L_max+1)^2,1); % column vector of zeros
+	ww(1:numel(w))=w(:);
+	w=ww;
 
 	% SEPARABLE GRID CASE
 	% We exploit separability and the vector operations of matlab.

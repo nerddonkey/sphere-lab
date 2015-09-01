@@ -15,3 +15,9 @@ function [Ylm,theta,phi]=sphereHarm(l,m,tt,pp)
 		error('** invalid inputs or out-of-range')
 	end
 end
+
+% to do: for efficiency
+% function [Yl,theta,phi]=sphereHarmBank(l,tt,pp)
+% where Yl is multidimensional
+% Yl= [Yl(0,theta,phi) ... Yl(m,theta,phi) ... Yl(l,theta,phi)]
+% somewhat mimicking the legendre call

@@ -1,7 +1,7 @@
 function run_SlepianD
 %run_SlepianD compute and plot dominant Slepian eigenfunction on
 % the sphere for a hardwired region and hardwired bandwidth
-	L_max=8;
+	L_max=13;
 	intginc=0.1; % fine grid for integration
 	plotinc=2.0; % coarse grid for plotting
 
@@ -33,9 +33,11 @@ function run_SlepianD
 	[slepian,~,~]=spatial(w,tt,pp,0);
 	maxSlepian=max(abs(slepian(:))); % normalization to [-1.0,1.0] for plotting
 
-	% compute energy in spatial domain
-	fprintf('@@ Spectral Energy: %8.6f\n',norm(w))
-	fprintf('@@ Spatial Energy: %8.6f (theory %8.6f)\n',spatialEnergy(slepian,tt,pp),norm(w))
+	% energies in spatial and spectral domains
+	spectralEnergy=norm(w)^2;
+	spatialEnergy=trapSphereR(abs(slepian).^2,tt,pp);
+	fprintf('@@ Spectral Energy: %8.6f\n',spectralEnergy)
+	fprintf('@@ Spatial Energy: %8.6f\n',spatialEnergy)
 
 	% plot eigenfunction in spatial domain
 	close
@@ -58,15 +60,15 @@ function run_SlepianD
 	for r=1:size(tr,1) % loop over subregions (fine grid)
 		tt=(tr(r,1):intginc:tr(r,2))*pi/180;
 		pp=(pr(r,1):intginc:pr(r,2))*pi/180;
-		[reg,~,~]=spatial(w,tt,pp,1);
-		lambda_est=lambda_est+spatialEnergy(reg,tt,pp);
+		[reg,~,~]=spatial(w,tt,pp,0);
+		lambda_est=lambda_est+trapSphereR(abs(reg).^2,tt,pp);
 	end
 
 	% Plot sub-regions computation
 	for r=1:size(tr,1) % loop over subregions (coarse grid)
 		tt=(tr(r,1):plotinc:tr(r,2))*pi/180;
 		pp=(pr(r,1):plotinc:pr(r,2))*pi/180;
-		[reg,theta,phi]=spatial(w,tt,pp,1);
+		[reg,theta,phi]=spatial(w,tt,pp,0);
 		spatial_plot(reg/maxSlepian,theta,phi,bump_height,ref_sphere,plottype);
 	end
 
@@ -78,7 +80,7 @@ function run_SlepianD
 	a.LineStyle='none';
 	a.Tag='myLabel';
 
-	fprintf('@@ Region Energy: %8.6f (theory %8.6f)\n',lambda_est,lambda)
+	fprintf('@@ Region Energy: %8.6f (eigenvalue %8.6f)\n',lambda_est,lambda)
 
 	hold off
 
@@ -86,15 +88,6 @@ function run_SlepianD
 	outname=sprintf('figs/slep_%02d', L_max);
 	set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
 	saveas(gcf,outname,'png')
-end
-
-function [e]=spatialEnergy(f,tt,pp)
-	e=trapSphereR(abs(f).^2,tt,pp);
-end
-
-function [I]=trapSphereR(f,tt,pp)
-	fs=bsxfun(@times,f,sin(tt(:)));
-	I=trapz(pp,trapz(tt,fs,1));
 end
 
 % convert -delay 50 -loop 0 slep*.png slep.gif

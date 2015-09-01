@@ -27,11 +27,11 @@ where the normalization is given by
 
 \subsection{Normalization}
 
-As can be gleaned by looking at the asymptotics of the terms, computing $N_{\ell}^{m}$ and $P_{\ell}^{m}(z)$ \emph{separately} causes numerical problems as $\ell$ becomes large. Empirically, these problems emerge around $l=150$.
+As can be gleaned by looking at the asymptotics of the terms, computing $N_{\ell}^{m}$ and $P_{\ell}^{m}(z)$ \emph{separately} causes numerical problems as $\ell$ becomes large. Empirically, these problems emerge around $\ell=150$.
 
 Direct computation of \emph{normalized or semi-normalized} associated Legendre functions, which essentially computes $N_{\ell}^{m}\,P_{\ell}^{m}(z)$ holistically, is a better numerical strategy.
 
-We use the Schmidt semi-normalized Legendre functions because they are implemented in MATLAB. Empirically, if problems emerge then they are for $l>2000$.
+We use the Schmidt semi-normalized Legendre functions because they are implemented in MATLAB as {\tt\color{blue}legendre(l,m,'sch')}. Empirically, if problems emerge then they are for $\ell>2000$.
 
 \subsubsection{Schmidt semi-normalized associated Legendre functions}
 
