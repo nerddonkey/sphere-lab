@@ -7,7 +7,7 @@ function run_Orthonormal
 	tt=[0:deginc:180]*pi/180;
 	pp=[0:deginc:360]*pi/180;
 
-	D=SlepianD(L_max,tt,pp); % should be identity
+	D=SlepianDH(L_max,tt,pp); % should be identity
 
 	MSE=norm(D-eye(size(D)),'fro')/numel(D); % MSE from identity
 	fprintf('Size of D matrix: %d x %d\n', size(D))

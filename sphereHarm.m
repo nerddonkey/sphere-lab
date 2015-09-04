@@ -1,5 +1,6 @@
 function [Ylm,theta,phi]=sphereHarm(l,m,tt,pp)
 %sphereHarm spherical harmonic of degree l and order m
+% see notes.tex/pdf for maths
 	if isvector(tt) && isvector(pp) && abs(m)<=l && l>=0
 		tt=tt(:)'; pp=pp(:)'; % ensure they are row vectors
 		[theta,phi]=ndgrid(tt,pp);
@@ -12,11 +13,11 @@ function [Ylm,theta,phi]=sphereHarm(l,m,tt,pp)
 			Ylm=(-1)^m*conj(Ylm);
 		end
 	else
-		error('** invalid inputs or out-of-range')
+		error('@@ invalid inputs or out-of-range')
 	end
 end
 
-% to do: for efficiency
+% to do: for efficiency a more general version
 % function [Yl,theta,phi]=sphereHarmBank(l,tt,pp)
 % where Yl is multidimensional
 % Yl= [Yl(0,theta,phi) ... Yl(m,theta,phi) ... Yl(l,theta,phi)]

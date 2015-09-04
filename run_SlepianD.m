@@ -1,13 +1,21 @@
 function run_SlepianD
 %run_SlepianD compute and plot dominant Slepian eigenfunction on
 % the sphere for a hardwired region and hardwired bandwidth
-	L_max=13;
+for eigindex=0:0 % eigenvalue index 0,1,2 in descending energy order
+for L_max=12:16 % range of L_max
 	intginc=0.1; % fine grid for integration
+	medinc=0.5; % coarse grid for plotting
 	plotinc=2.0; % coarse grid for plotting
 
-	% (disjoint) subregions
-	tr=[30 60; 20 70; 80 110];
-	pr=[-70 -10; 0 40; -70 -10];
+   fprintf('\n@@ L_max: %d\n',L_max)
+   fprintf('@@ Fine Grid: %.2f\n',intginc)
+   fprintf('@@ Coarse Grid: %.2f\n',plotinc)
+
+	% (disjoint) subregions (3 off)
+% 	tr=[30 60; 20 70; 80 110];
+% 	pr=[-70 -10; 0 40; -70 -10];
+	tr=[30 60; 80 110];
+	pr=[-70 -10; -70 -10];
 
 	N_max=(L_max+1)^2;
 	D=zeros(N_max,N_max);
@@ -15,23 +23,26 @@ function run_SlepianD
 	for r=1:size(tr,1) % loop over subregions
 		tt=(tr(r,1):intginc:tr(r,2))*pi/180;
 		pp=(pr(r,1):intginc:pr(r,2))*pi/180;
-		D=D+SlepianD(L_max,tt,pp);
+		D=D+SlepianDH(L_max,tt,pp);
+      fprintf('@@ Completed D for Region: %d\n',r)
 	end
 
-	fprintf('\n@@ Size of D matrix: %dx%d\n', size(D))
+	fprintf('@@ Size of D matrix: %dx%d\n', size(D))
 
 	% dominant eigenvector w with eigenvalue lambda in spectral domain
 	[V,lamD]=eig(D); % eigenvalue
-	lambda=lamD(end,end);
+	lambda=lamD(end-eigindex,end-eigindex);
+   % stem(flip(diag(lamD))) % plot the eigenvalues
 	fprintf('@@ Largest Eigenvalue: %8.6f\n',lambda)
-	w=V(:,end); % eigenvector
+	w=V(:,end-eigindex); % eigenvector
 	w=w/norm(w); % normalize eigenvector (superfluous)
 
 	% dominant eigenfunction in spatial domain
 	tt=(0:intginc:180)*pi/180;
 	pp=(0:intginc:360)*pi/180;
-	[slepian,~,~]=spatial(w,tt,pp,0);
-	maxSlepian=max(abs(slepian(:))); % normalization to [-1.0,1.0] for plotting
+	[slepian,theta,phi]=spatial(w,tt,pp,0);
+	maxSlepian=1.2;%max(abs(slepian(:))); % normalization to [-1.0,1.0] for plotting
+	fprintf('@@ Max Slepian: %8.6f\n',maxSlepian)
 
 	% energies in spatial and spectral domains
 	spectralEnergy=norm(w)^2;
@@ -41,16 +52,16 @@ function run_SlepianD
 
 	% plot eigenfunction in spatial domain
 	close
-	bump_height=0.2;
+	bump_height=0.15;
 	ref_sphere=1.0;
 	plottype=1;
 
-	tt=(0:plotinc:180)*pi/180;
-	pp=(0:plotinc:360)*pi/180;
-	[slepian,theta,phi]=spatial(w,tt,pp,0);
+ 	tt=(0:medinc:180)*pi/180;
+ 	pp=(0:medinc:360)*pi/180;
+ 	[slepian,theta,phi]=spatial(w,tt,pp,0);
 	s=spatial_plot(slepian/maxSlepian,theta,phi,bump_height,ref_sphere,plottype);
 	s.EdgeColor='none'; % no lines
-	s.FaceAlpha=0.4;
+	s.FaceAlpha=0.8;
 	colormap(copper)
 
 	hold on
@@ -60,9 +71,10 @@ function run_SlepianD
 	for r=1:size(tr,1) % loop over subregions (fine grid)
 		tt=(tr(r,1):intginc:tr(r,2))*pi/180;
 		pp=(pr(r,1):intginc:pr(r,2))*pi/180;
-		[reg,~,~]=spatial(w,tt,pp,0);
+		reg=spatial(w,tt,pp,0);
 		lambda_est=lambda_est+trapSphereR(abs(reg).^2,tt,pp);
-	end
+   end
+   lambda_est=lambda_est/spatialEnergy;
 
 	% Plot sub-regions computation
 	for r=1:size(tr,1) % loop over subregions (coarse grid)
@@ -84,10 +96,12 @@ function run_SlepianD
 
 	hold off
 
-	% output to png file to current directory
-	outname=sprintf('figs/slep_%02d', L_max);
+	% output to png file (check directory exists)
+	outname=sprintf('figs/sleppy_%02d_%02d',L_max,eigindex);
 	set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
 	saveas(gcf,outname,'png')
+end
+end
 end
 
 % convert -delay 50 -loop 0 slep*.png slep.gif

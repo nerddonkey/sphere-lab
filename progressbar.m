@@ -51,7 +51,7 @@ function progressbar(varargin)
 %       pause(0.01) % Do something important
 %       progressbar(i/m) % Update progress bar
 %     end
-% 
+%
 %     % Simple multi bar (update one bar at a time)
 %     m = 4;
 %     n = 3;
@@ -69,7 +69,7 @@ function progressbar(varargin)
 %         end
 %         progressbar(i/m) % Update 1st bar
 %     end
-% 
+%
 %     % Fancy multi bar (use labels and update all bars at once)
 %     m = 4;
 %     n = 3;
@@ -142,7 +142,7 @@ if input{1} == 1
     return
 end
 
-% Init reset flag 
+% Init reset flag
 resetflag = false;
 
 % Set reset flag if first input is a string
@@ -175,21 +175,21 @@ end
 % Create new progress bar if needed
 if ishandle(progfig)
 else % This strange if-else works when progfig is empty (~ishandle() does not)
-    
+
     % Define figure size and axes padding for the single bar case
     height = 0.03;
     width = height * 8;
     hpad = 0.02;
     vpad = 0.25;
-    
+
     % Figure out how many bars to draw
     nbars = max(ninput, length(progdata));
-    
+
     % Adjust figure size and axes padding for number of bars
     heightfactor = (1 - vpad) * nbars + vpad;
     height = height * heightfactor;
     vpad = vpad / heightfactor;
-    
+
     % Initialize progress bar figure
     left = (1 - width) / 2;
     bottom = (1 - height) / 2;
@@ -199,7 +199,7 @@ else % This strange if-else works when progfig is empty (~ishandle() does not)
         'NumberTitle', 'off',...
         'Resize', 'off',...
         'MenuBar', 'none' );
-    
+
     % Initialize axes, patch, and text for each bar
     left = hpad;
     width = 1 - 2*hpad;
@@ -230,25 +230,25 @@ else % This strange if-else works when progfig is empty (~ishandle() does not)
             set(progdata(ndx).proglabel, 'String', input{ndx})
             input{ndx} = 0;
         end
-        
+
         % Set callbacks to change color on mouse click
         set(progdata(ndx).progaxes, 'ButtonDownFcn', {@changecolor, progdata(ndx).progpatch})
         set(progdata(ndx).progpatch, 'ButtonDownFcn', {@changecolor, progdata(ndx).progpatch})
         set(progdata(ndx).progtext, 'ButtonDownFcn', {@changecolor, progdata(ndx).progpatch})
         set(progdata(ndx).proglabel, 'ButtonDownFcn', {@changecolor, progdata(ndx).progpatch})
-        
+
         % Pick a random color for this patch
         changecolor([], [], progdata(ndx).progpatch)
-        
+
         % Set starting time reference
         if ~isfield(progdata(ndx), 'starttime') || isempty(progdata(ndx).starttime)
             progdata(ndx).starttime = clock;
         end
     end
-    
+
     % Set time of last update to ensure a redraw
     lastupdate = clock - 1;
-    
+
 end
 
 % Process inputs and update state of progdata
