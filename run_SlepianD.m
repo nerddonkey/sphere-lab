@@ -2,7 +2,7 @@ function run_SlepianD
 %run_SlepianD compute and plot dominant Slepian eigenfunction on
 % the sphere for a hardwired region and hardwired bandwidth
 for eigindex=0:0 % eigenvalue index 0,1,2 in descending energy order
-for L_max=12:16 % range of L_max
+for L_max=6:6 % range of L_max
 	intginc=0.1; % fine grid for integration
 	medinc=0.5; % coarse grid for plotting
 	plotinc=2.0; % coarse grid for plotting

@@ -1,6 +1,6 @@
 function [Ylm,theta,phi]=sphereHarm(l,m,tt,pp)
 %sphereHarm spherical harmonic of degree l and order m
-% see notes.tex/pdf for maths
+% see notes.tex/pdf for maths; seems robust for l to 2000
 	if isvector(tt) && isvector(pp) && abs(m)<=l && l>=0
 		tt=tt(:)'; pp=pp(:)'; % ensure they are row vectors
 		[theta,phi]=ndgrid(tt,pp);

@@ -12,7 +12,7 @@ function [f,theta,phi]=spatial_globe(L_max,ntt,npp,filename)
 	P_max=min(15,Q_max); % number of preview real SH file lines
 
 	% READ IN A FILE OF REAL SH COEFFICIENTS
-	sizeA=[4 Q_max];
+	sizeA=[4 Q_max]; % have to read in transpose (4 rows)
 	A=zeros(sizeA); % allocate
 	fid=fopen(filename,'r');
 	A=fscanf(fid,'%d %d %f %f',sizeA);
@@ -27,7 +27,7 @@ function [f,theta,phi]=spatial_globe(L_max,ntt,npp,filename)
 
 	% convert the real SH from file to complex SH coefficients
 	C(1)=0; % remove DC or radius term
-	S(1)=0; % remove DC or radius term
+	S(1)=0; % remove DC or radius term (should be zero anyway)
  	w=zeros(N_max,1); % allocate for complex SH coefficients
 	for l=[0:L_max]
 		for m=[0:l]
@@ -35,10 +35,10 @@ function [f,theta,phi]=spatial_globe(L_max,ntt,npp,filename)
 			n1=l*(l+1)-m; % n corresponding to l,-m (m>=0) [output]
 			q=round(l*(l+1)/2+m); % real SH index [input]
 			if m==0
-				w(n+1)=C(q+1)-1j*S(q+1);
+				w(n+1)=C(q+1)-1j*S(q+1); % Y_l^0 coefficient (m=0)
 			else
-				w(n+1)=sqrt(0.5)*(C(q+1)-1j*S(q+1));
-				w(n1+1)=(-1)^m*conj(w(n+1));
+				w(n+1)=sqrt(0.5)*(C(q+1)-1j*S(q+1)); % Y_l^m coefficient (m>0)
+				w(n1+1)=(-1)^m*conj(w(n+1)); % Y_l^{-}m coefficient (m>0)
 			end
 		end
 	end
