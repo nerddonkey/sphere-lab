@@ -1,5 +1,5 @@
-function [f,theta,phi]=spatial(w,tt,pp,useProgressBar)
-%spatial performs the inverse spherical harmonic transform. The spherical harmonic
+function [F,theta,phi]=spatial(w,tt,pp,useProgressBar)
+%SPATIAL performs the inverse spherical harmonic transform. The spherical harmonic
 % coefficients are provided in vector w which is organized in the (l,m): (0,0)
 % (1,-1) (1,0) (1,1) (2,-2) ... ordering.  Inputs tt and pp specify the theta and
 % phi values over which the spatial function f is computed.  The coefficient vector
@@ -17,15 +17,15 @@ function [f,theta,phi]=spatial(w,tt,pp,useProgressBar)
 % each point on the mesh.  Computations are essentially all scalar because we can't
 % assume separability.
 %
-% test for errors
-	if ~isvector(w)
-	  error('weight is not a vector')
+% Y_l^m = (-1)^m Q_l P_l^m(sch) e^m\phi, for m\geq0
+% Y_l^{-m} = (-1)^m conj(Y_l^m), for m>0
+%
+	% pad w with zeros if its length is not a square
+	L_max=ceil(sqrt(length(w)))-1;
+	N_tot=(L_max+1)^2;
+	if length(w) < N_tot % pad with zeros to make it a squared length
+		w(N_tot)=0;
 	end
-
-	L_max=ceil(sqrt(numel(w)))-1;
-	ww=zeros((L_max+1)^2,1); % column vector of zeros
-	ww(1:numel(w))=w(:);
-	w=ww;
 
 	% SEPARABLE GRID CASE
 	% We exploit separability and the vector operations of matlab.
@@ -37,14 +37,12 @@ function [f,theta,phi]=spatial(w,tt,pp,useProgressBar)
 		tt=tt(:)'; pp=pp(:)'; % ensure they are row vectors
 		[theta,phi]=ndgrid(tt,pp); % define the mesh
 
-		f=zeros(size(theta)); % mesh answer to be accumulated
+		F=zeros(size(theta)); % mesh answer to be accumulated
 
 		if useProgressBar~=0
-			progressbar(0)
+			progressbar('spatial')
 		end;
 
-		% Y_l^m = (-1)^m Q_l P_l^m(sch) e^m\phi, for m\geq0
-		% Y_l^{-m} = (-1)^m conj(Y_l^m), for m>0
 		for l=[0:L_max]
 			Sl=legendre(l,cos(tt),'sch');
 			Sl(1,:)=Sl(1,:)*sqrt(2); % m=0 component
@@ -59,13 +57,13 @@ function [f,theta,phi]=spatial(w,tt,pp,useProgressBar)
 				end
 				Slm=Sl(m+1,:)'; % pull out S_l^m (evaluated on theta vector tt)
 				Ylm=(-1)^m*Ql*kron(ones(size(pp)),Slm).*exp(1j*m*phi);
-				f=f+wlm*Ylm;
-				if m~=0 % add the -m term
-					f=f+wlm1*(-1)^m*conj(Ylm);
+				F=F+wlm*Ylm; % m contribution
+				if m~=0 % add the -m contribution
+					F=F+wlm1*(-1)^m*conj(Ylm);
 				end
 			end
 			if useProgressBar~=0
-				progressbar(l^2/L_max^2)
+				progressbar((l+1)^2/(L_max+1)^2)
 			end;
 		end
 		return;
@@ -79,7 +77,7 @@ function [f,theta,phi]=spatial(w,tt,pp,useProgressBar)
 	if ~isvector(tt) && ~isvector(pp) && isequal(size(tt),size(pp))
 		theta=tt; phi=pp; % pass input mesh to output
 
-		f=zeros(size(theta)); % mesh answer to be accumulated
+		F=zeros(size(theta)); % mesh answer to be accumulated
 
 		for s=[1:numel(theta)] % walk thru matrix as vector
 			for l=[0:L_max]
@@ -96,9 +94,9 @@ function [f,theta,phi]=spatial(w,tt,pp,useProgressBar)
 					end
 					Slm=Sl(m+1,:)'; % pull out S_l^m (evaluated on theta vector tt)
 					Ylm=(-1)^m*Ql*Slm.*exp(1j*m*phi(s)); % scalar
-					f(s)=f(s)+wlm*Ylm;
+					F(s)=F(s)+wlm*Ylm;
 					if m~=0
-						f(s)=f(s)+wlm1*(-1)^m*conj(Ylm);
+						F(s)=F(s)+wlm1*(-1)^m*conj(Ylm);
 					end
 				end
 			end

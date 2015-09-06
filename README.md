@@ -15,3 +15,13 @@ Some routines for spherical harmonic transform related work
 
 - Inner products and the Spherical Harmonic Transform need a double integral over the sphere in the natural measure.  Numerically this is done using a trapezoid rule and is achieved in two lines of code.
 - The region is defined through a mesh.  To do: add a mask to mesh to have a irregular region.
+
+### Indices
+
+- l: l>=0 is the degree
+	- when bandlimited the maximum non-zero index is L_max, and L_tot=L_max+1
+- m: abs(m)<=l is the order
+- n: n>=0 is the single countable index
+	- n=l*(l+1)+m
+	- l=floor(sqrt(r-1)); m=r-1-l*(l+1);
+	- when bandlimited the maximum non-zero index is N_max=(L_max+1)^2-1, and N_tot=(L_max+1)^2
