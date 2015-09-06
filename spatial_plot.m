@@ -13,8 +13,11 @@ switch plottype
 	otherwise
 		F=real(G);
 end
-% 	maxF=max(max(abs(F)));
-% 	F=F/maxF; % normalize entries to interval [-1.0,1.0]
+
+if 0 % normalize
+ 	maxF=max(max(abs(F)));
+ 	F=F/maxF; % normalize entries to interval [-1.0,1.0]
+end
 
 % make radius<=1 an affine mapping of the spherical harmonic value
 radius=abs(ref_sphere + bump_height*F)/(ref_sphere+bump_height);
@@ -64,4 +67,3 @@ end
 set(fa,'CameraViewAngle',9) % zoom into scene
 axes(fa);
 rotate3d on % setup for for gui interaction
-

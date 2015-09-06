@@ -1,6 +1,5 @@
 function run_SlepianD
-%run_SlepianD compute and plot dominant Slepian eigenfunction on
-% the sphere for a hardwired region and hardwired bandwidth
+%run_SlepianD compute and plot Slepian eigenfunctions on the sphere (8.27) and (8.29)
 
 intginc=0.1; % fine grid for integration (degrees)
 medinc=0.5; % medium grid for smooth plotting (degrees)
@@ -24,7 +23,7 @@ tr(3,:)=[20 70];
 pr(3,:)=[0 40];
 
 for eigindex=0:0 % eigenvalue index 0,1,2 in descending energy order
-	for L_max=8:8 % range of L_max
+	for L_max=4:4 % range of L_max
 		fprintf('\n@@ L_max: %d\n',L_max)
 		N_tot=(L_max+1)^2;
 		D=zeros(N_tot,N_tot); % allocate and initialize to zero
@@ -46,7 +45,7 @@ for eigindex=0:0 % eigenvalue index 0,1,2 in descending energy order
 		% stem(flip(diag(lamD))) % plot the eigenvalues
 
 		% dominant eigenfunction in spatial domain
-		[slepian,theta,phi]=spatial(w,ttf,ppf,0);
+		slepian=spatial(w,ttf,ppf);
 		maxSlepian=1.2;%max(abs(slepian(:))); % normalization to [-1.0,1.0] for plotting
 		fprintf('@@ Max Slepian: %8.6f\n',maxSlepian)
 
@@ -59,7 +58,7 @@ for eigindex=0:0 % eigenvalue index 0,1,2 in descending energy order
 		% plot eigenfunction in spatial domain
 		close
 		bump_height=0.15; ref_sphere=1.0; plottype=1;
-		[slepian,theta,phi]=spatial(w,(0:medinc:180)*pi/180,(0:medinc:360)*pi/180,0);
+		[slepian,theta,phi]=spatial(w,(0:medinc:180)*pi/180,(0:medinc:360)*pi/180,1);
 		s=spatial_plot(slepian/maxSlepian,theta,phi,bump_height,ref_sphere,plottype);
 		s.EdgeColor='none'; % no lines
 		s.FaceAlpha=0.8;

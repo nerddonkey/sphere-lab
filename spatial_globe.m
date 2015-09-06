@@ -11,7 +11,7 @@ fprintf('%8d %8d %8d', L_max, Q_tot, N_tot)
 
 P_max=min(15,Q_tot); % number of preview real SH file lines
 
-% READ IN A FILE OF REAL SH COEFFICIENTS
+% read in SH coefficients from file
 sizeA=[4 Q_tot]; % have to read in transpose (4 rows)
 A=zeros(sizeA); % allocate
 fid=fopen(filename,'r');
@@ -53,7 +53,7 @@ for n=[1:R_max]
 end
 
 % evaluate the spatial function on mesh
-if 1 % Australia
+if 0 % Australia
 	tt=linspace(90,140,ntt)*pi/180;
 	pp=linspace(285,345,npp)*pi/180;
 else % whole world
@@ -63,4 +63,3 @@ end
 [F,theta,phi]=spatial(w,tt,pp,1);
 maxF=max(abs(F(:)));
 F=F/maxF; % normalize entries to interval [-1.0,1.0]
-
