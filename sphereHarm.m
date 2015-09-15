@@ -12,12 +12,6 @@ if isvector(tt) && isvector(pp) && abs(m)<=l && l>=0
 	if m<0
 		Ylm=(-1)^m*conj(Ylm);
 	end
-else
+else % one day can add code to deal with mesh data
 	error('@@ invalid inputs or out-of-range')
 end
-
-% to do: for efficiency a more general version
-% function [Yl,theta,phi]=sphereHarmBank(l,tt,pp)
-% where Yl is multidimensional
-% Yl= [Yl(0,theta,phi) ... Yl(m,theta,phi) ... Yl(l,theta,phi)]
-% somewhat mimicking the legendre call

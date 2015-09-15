@@ -38,7 +38,7 @@ We use the Schmidt semi-normalized Legendre functions because they are implement
 As defined and implemented in MATLAB, the Schmidt semi-normalized (associated) Legendre functions are:
 \color{blue}\begin{verbatim}
 SP(N,M;X) = P(N,X), M = 0
-          = (-1)^M * sqrt(2*(N-M)!/(N+M)!) * P(N,M;X), M > 0
+			 = (-1)^M * sqrt(2*(N-M)!/(N+M)!) * P(N,M;X), M > 0
 \end{verbatim}\color{black}
 that is,
 \[
@@ -100,7 +100,8 @@ Then we have
 \subsubsection{MATLAB implementation}
 
 The Schmidt semi-normalized Legendre functions are available in MATLAB so we only need to modify the $m=0$ case, \eqref{eqn:sps}.  The following code computes $Y_{\ell}^{m}(\theta,\varphi)$ for $\ell\geq0$ and $m\in\{-\ell,\dotsc,\ell\}$ on a separable grid in $\theta$ and $\phi$:
-\color{blue}\begin{verbatim}
+\color{blue}
+\begin{verbatim}
 function [Ylm,theta,phi]=sphereHarm(l,m,tt,pp)
 %sphereHarm spherical harmonic of degree l and order m
    if isvector(tt) && isvector(pp) && abs(m)<=l && l>=0
@@ -117,6 +118,7 @@ function [Ylm,theta,phi]=sphereHarm(l,m,tt,pp)
    else
       error('** invalid inputs or out-of-range')
    end
-end\end{verbatim}\color{black}
+end\end{verbatim}
+\color{black}
 
 \end{document}

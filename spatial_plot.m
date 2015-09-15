@@ -1,5 +1,18 @@
-function [s]=spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype)
+function [s]=spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype,normalize)
 %spatial_plot
+
+if nargin<4
+	bump_height=0.15;
+end
+if nargin<5
+	ref_sphere=1.0;
+end
+if nargin<6
+	plottype=1;
+end
+if nargin<7
+	normalize=0;
+end
 
 switch plottype
 	case 0
@@ -14,8 +27,8 @@ switch plottype
 		F=real(G);
 end
 
-if 0 % normalize
- 	maxF=max(max(abs(F)));
+if normalize~=0
+ 	maxF=max(abs(F(:)));
  	F=F/maxF; % normalize entries to interval [-1.0,1.0]
 end
 
@@ -51,7 +64,7 @@ axis off
 
 delete(findall(gcf,'Type','colorbar')) % remove existing colorbars
 c=colorbar('position',[0.03 0.75 0.03 0.22]);
-c.Ticks=[-1:0.5:1];
+c.Ticks=-1:0.5:1;
 c.TickLabelInterpreter='latex';
 c.TickLabels={'$-1$','','$0$','','$1$'};
 c.FontSize=12;

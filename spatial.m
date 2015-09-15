@@ -48,11 +48,11 @@ if isvector(tt) && isvector(pp)
 		progressbar('spatial')
 	end;
 
-	for l=[0:L_max]
+	for l=0:L_max
 		Sl=legendre(l,cos(tt),'sch');
-		Sl(1,:)=Sl(1,:)*sqrt(2); % m=0 component
+		Sl(1,:)=Sl(1,:)*sqrt(2); % m=0 component, see note.tex/pdf
 		Ql=sqrt((2*l+1)/(8*pi));
-		for m=[0:l]
+		for m=0:l
 			n=l*(l+1)+m; % (7.39)
 			n1=l*(l+1)-m; % (7.39)
 			wlm=w(n+1); % the weight for degree l and order m
@@ -81,15 +81,20 @@ end % SEPARABLE CASE
 % we need to compute for each point; so this can be slow.
 if ~isvector(tt) && ~isvector(pp) && isequal(size(tt),size(pp))
 	theta=tt; phi=pp; % pass input mesh to output
+	S_max=numel(theta);
 
 	F=zeros(size(theta)); % mesh answer to be accumulated
 
-	for s=[1:numel(theta)] % walk thru matrix as vector
-		for l=[0:L_max]
+	if useProgressBar~=0
+		progressbar('spatial non-sep')
+	end;
+
+	for s=1:S_max % walk thru matrix as vector
+		for l=0:L_max
 			Sl=legendre(l,cos(theta(s)),'sch');
 			Sl(1,:)=Sl(1,:)*sqrt(2); % m=0 component
 			Ql=sqrt((2*l+1)/(8*pi)); % Y_l^m = (-1)^m NSl P_l^m(sch) e^m\phi
-			for m=[0:l]
+			for m=0:l
 				n=l*(l+1)+m; % (7.39)
 				n1=l*(l+1)-m; % (7.39)
 				wlm=w(n+1); % the weight for degree l and order m
@@ -105,6 +110,9 @@ if ~isvector(tt) && ~isvector(pp) && isequal(size(tt),size(pp))
 				end
 			end
 		end
+		if useProgressBar~=0
+			progressbar(s/S_max);
+		end;
 	end
 	return;
 end % GENERALLY NON-SEPARABLE GRID CASE

@@ -11,15 +11,6 @@ if isvector(tt) && isvector(pp) && l>=0
 		Slm=Sl(m+1,:)'; % pull out S_l^m row and transpose to column
 		Yl{m+1}=(-1)^m*Ql*kron(ones(1,length(pp)),Slm).*exp(1j*m*phi); % cell array
 	end
-else
+else % one day can add code to deal with mesh data
 	error('@@ invalid inputs or out-of-range')
-end
-
-function [Ylm,theta,phi]=sphereHarmBankm(l,m,tt,pp)
-%sphereHarmBankm spherical harmonic of degree l and order m via sphereHarmBank
-
-[YB,theta,phi]=sphereHarmBank(l,tt,pp);
-Ylm=YB{abs(m)+1};
-if m<0
-   Ylm=(-1)^m*conj(Ylm);
 end
