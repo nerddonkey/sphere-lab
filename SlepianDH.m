@@ -20,7 +20,7 @@ for r=1:N_tot % rows of D
 	D(r,r)=trapSphereMaskedR(f.*conj(f),tt,pp,R_mask); % diagonal element
 	count=count+1; progressbar(count/total,[])
 	for c=r+1:N_tot % columns of D
-		p=floor(sqrt(c-1)); q=c-1-l*(l+1); % (7.40) here n=c-1
+		p=floor(sqrt(c-1)); q=c-1-p*(p+1); % (7.40) here n=c-1
 		g=sphereHarm(p,q,tt,pp);
 		D(r,c)=trapSphereMaskedR(g.*conj(f),tt,pp,R_mask); % (8.27)
 		D(c,r)=conj(D(r,c)); % Hermitian symmetric element

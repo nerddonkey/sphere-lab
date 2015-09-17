@@ -9,3 +9,6 @@
 % convert -delay 30 -quality 100 aus_* movie.mov
 % check=bsxfun(@rdivide,D*w,w) % check eigenvector works as expected
 
+setenv('PATH', [getenv('PATH') ';D:\Perl\bin']);
+
+setenv('PATH', [getenv('PATH') ':/usr/local/bin:/usr/local/bin']);
