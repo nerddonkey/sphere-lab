@@ -20,6 +20,9 @@ Y=Y/maxY;
 bump_height=0.8; ref_sphere=1.0; plottype=2; % real
 s=spatial_plot(Y,theta,phi,bump_height,ref_sphere,plottype);
 s.EdgeColor='black'; % 'none'
+fig=gcf;
+fig.Position(1)=0;
+fig.Position(2)=100;
 
 figure
 
@@ -37,6 +40,9 @@ Ylm=Ylm/maxY;
 bump_height=0.8; ref_sphere=1.0; plottype=2; % real
 s=spatial_plot(Ylm,theta,phi,bump_height,ref_sphere,plottype);
 s.EdgeColor='black'; %'none'
+fig=gcf;
+fig.Position(1)=400;
+fig.Position(2)=100;
 
 figure
 
@@ -75,3 +81,7 @@ Ylm=Ylm/maxF;
 bump_height=0.8; ref_sphere=1.0; plottype=2; % real
 s=spatial_plot(Ylm,theta,phi,bump_height,ref_sphere,plottype);
 s.EdgeColor='black'; % 'none'
+fig=gcf;
+fig.Position(1)=800;
+fig.Position(2)=100;
+
