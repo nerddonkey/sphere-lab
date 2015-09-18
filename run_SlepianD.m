@@ -2,8 +2,10 @@ function run_SlepianD(aus)
 %run_SlepianD: compute and plot Slepian eigenfunctions on the sphere (8.27) and (8.29)
 
 if nargin < 1
-	aus=0; % default is not to do Australia
+	aus=1; % default is not to do Australia
 end
+
+dir='~/Documents/MATLAB/frames/';
 
 intginc=0.1; % fine grid for integration (degrees)
 medinc=0.5; % medium grid for smooth plotting (degrees)
@@ -156,16 +158,21 @@ for L_max=3:5 % range of L_max
 		hold off
 
 		% output to png file (directory needs to exist)
-		outname=sprintf('frames/%s_%04d_%04d',basename,L_max,eigindex);
+		outname=sprintf('%s_%04d_%04d',[dir basename],L_max,eigindex);
 		set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
 		saveas(gcf,outname,'png')
-	end
+   end
 
-	if 1 % render movie on osx; needs convert and avconv via brew install libav
+   % render movie on osx; needs convert and avconv via brew install libav
+   status=system('which convert');
+   
+	if status==0 
 		%setenv('PATH', [getenv('PATH') ':/usr/local/bin:/usr/local/bin']);
-		shellcmd=sprintf('convert -delay 30 -quality 100 frames/%s_%04d_* frames/%sm-%04d.mov', ...
-			basename,L_max,basename,L_max);
-		system(shellcmd);
-		system('rm frames/*.png');
+      %setenv('DYLD_LIBRARY_PATH', '/usr/local/bin/');
+		rendermovie=sprintf('convert -delay 30 -quality 100 %s_%04d_* %sm-%04d.mov', ...
+			[dir basename],L_max,[dir basename],L_max);
+		system(rendermovie); % make compressed mov
+      cleanup=sprintf('rm %s_%04d*.png', [dir basename],L_max)
+		system(cleanup); % delete frames
 	end
 end

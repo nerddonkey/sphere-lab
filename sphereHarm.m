@@ -4,7 +4,7 @@ function [Ylm,theta,phi]=sphereHarm(l,m,tt,pp)
 
 Qlm=(-1)^m*sqrt((2*l+1)/(8*pi)); % (-1)^m Q_l in note.tex/pdf
 
-if isvector(tt) && isvector(pp)
+if isvector(tt) && isvector(pp) % separable and fast
 	[theta,phi]=ndgrid(tt,pp); % create output mesh
 	Sl=legendre(l,cos(tt),'sch');
 	% Sl(1,:)=Sl(1,:)*sqrt(2); % m=0 adjustment, see note.tex/pdf
