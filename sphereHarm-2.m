@@ -9,15 +9,14 @@ if isvector(tt) && isvector(pp)
 	Sl=legendre(l,cos(tt),'sch');
 	% Sl(1,:)=Sl(1,:)*sqrt(2); % m=0 adjustment, see note.tex/pdf
 	Slm=Sl(abs(m)+1,:)'; % pull out S_l^|m| row and transpose to column
-	Ylm=Qlm*kron(ones(1,length(pp)),Slm).*exp(1j*m*phi);
+	Ylm=Qlm*kron(ones(1,length(pp)),Slm).*exp(1j*abs(m)*phi);
 elseif ~isvector(tt) && ~isvector(pp) && isequal(size(tt),size(pp))
 	theta=tt; phi=pp; % pass input mesh to output
-   Ylm=zeros(size(theta)); % defines shape for output
 	S_max=numel(theta);
 	for s=1:S_max % walk thru mesh as vector
 		Sl=legendre(l,cos(theta(s)),'sch'); % vector in m, scalar in theta
 		Slm=Sl(abs(m)+1,1); % pull out scalar S_l^|m| (scalar theta)
-		Ylm(s)=Qlm*Slm.*exp(1j*m*phi(s)); % scalar
+		Ylm(s)=Qlm*Slm.*exp(1j*abs(m)*phi(s)); % scalar
 	end
 else
 	error('@@ sphereHarm: invalid inputs')
@@ -26,5 +25,5 @@ end
 if m==0
 	Ylm=sqrt(2)*Ylm; % m=0 adjustment, see note.tex/pdf
 elseif m<0
-	Ylm=(-1)^m*Ylm; % m<0 adjustment, see note.tex/pdf
+	Ylm=(-1)^m*conj(Ylm); % m<0 adjustment, see note.tex/pdf
 end

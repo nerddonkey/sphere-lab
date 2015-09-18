@@ -102,7 +102,7 @@ if ~isvector(tt) && ~isvector(pp) && isequal(size(tt),size(pp))
 				if wlm==0 && wlm1==0
 					continue
 				end
-				Slm=Sl(m+1,:)'; % pull out S_l^m (evaluated on theta vector tt)
+				Slm=Sl(m+1,1); % pull out scalar S_l^m (evaluated at single theta)
 				Ylm=(-1)^m*Ql*Slm.*exp(1j*m*phi(s)); % scalar
 				F(s)=F(s)+wlm*Ylm;
 				if m~=0
@@ -116,4 +116,5 @@ if ~isvector(tt) && ~isvector(pp) && isequal(size(tt),size(pp))
 	end
 	return;
 end % GENERALLY NON-SEPARABLE GRID CASE
+
 error('weird mesh specification')

@@ -5,7 +5,8 @@ function run_Globe
 % This demonstrates the inverse sphericsal harmonic transform, that is,
 % going from the spectral domain to the spatial domain
 
-L_max=120  ; % maximum included spherical harmonic degree
+close all;
+L_max=600; % maximum included spherical harmonic degree
 ntt=max(21,L_max+1); % number of points in theta
 npp=max(41,2*L_max+1); % number of points in phi
 % ntt=201;
@@ -16,33 +17,33 @@ for bodyIndex=1:6
 		case 1
 			globe='Earth2012.topo_bathy_bed.SHCto2160.shape';
 			name='Earth2012-bed';
-			colormap('parula')
+			cmap='parula';
 		case 2
 			globe='Earth2012.topo_bathy.SHCto2160.shape';
 			name='Earth2012';
-			colormap('parula')
+			cmap='parula';
 		case 3
 			globe='Earth2012.topo_bathy.SHCto2160.shape';
 			name='Earth2012_air';
-			colormap('parula')
+			cmap='parula';
 		case 4
 			globe='MarsTopo2600.shape';
 			name='Mars';
-			colormap('hot')
+			cmap='hot';
 		case 5
 			globe='VenusTopo719.shape';
 			name='Venus';
-			colormap('hot')
+			cmap='hot';
 		case 6
 			globe='MoonTopo2600p.shape';
 			name='Moon';
-			colormap('bone')
+			cmap='parula';
 	end
 
 	[f,theta,phi]=spatial_globe(L_max,ntt,npp,globe);
 	s=spatial_plot(f,theta,phi,0.05,1.0,2);
-
-	s.EdgeColor='none'; % no line
+	colormap(cmap)
+	s.EdgeColor='none'; % no lines
 
 	llabel=sprintf('$L_{\\mathrm{max}}=%d$',L_max);
 	delete(findall(gcf,'Tag','myLabel'));
@@ -51,6 +52,11 @@ for bodyIndex=1:6
 	a.FontSize=18;
 	a.LineStyle='none';
 	a.Tag='myLabel';
+
+	fig=gcf;
+	fig.Name=name;
+	fig.Position(3)=600;
+	fig.Position(4)=600;
 
 	% output to png file to current directory
 	outname=sprintf('figs/%s_%04d',name,L_max);

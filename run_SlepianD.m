@@ -34,7 +34,7 @@ else % any number of non-intersecting regular subregions
 	basename='reg';
 end
 
-for L_max=3:12 % range of L_max
+for L_max=3:5 % range of L_max
 	fprintf('\n@@ L_max: %d\n',L_max)
 	% populate the N_tot x N_tot Hermitian D matrix (8.27)
 	N_tot=(L_max+1)^2;
@@ -162,6 +162,7 @@ for L_max=3:12 % range of L_max
 	end
 
 	if 1 % render movie on osx; needs convert and avconv via brew install libav
+		%setenv('PATH', [getenv('PATH') ':/usr/local/bin:/usr/local/bin']);
 		shellcmd=sprintf('convert -delay 30 -quality 100 frames/%s_%04d_* frames/%sm-%04d.mov', ...
 			basename,L_max,basename,L_max);
 		system(shellcmd);
