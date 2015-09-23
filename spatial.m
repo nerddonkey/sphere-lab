@@ -59,7 +59,7 @@ if isvector(tt) && isvector(pp)
 			wlm1=w(n1+1); % the weight for degree l and order m
 			if wlm==0 && wlm1==0
 				continue
-			end
+         end
 			Slm=Sl(m+1,:)'; % pull out S_l^m (evaluated on theta vector tt)
 			Ylm=(-1)^m*Ql*kron(ones(size(pp)),Slm).*exp(1j*m*phi);
 			F=F+wlm*Ylm; % m contribution

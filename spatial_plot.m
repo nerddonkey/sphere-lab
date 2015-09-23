@@ -1,6 +1,7 @@
-function [s]=spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype,normalize)
+function [s]=spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype,doScale)
 %spatial_plot
 
+%% default parameters
 if nargin<4
 	bump_height=0.15;
 end
@@ -11,28 +12,12 @@ if nargin<6
 	plottype=1;
 end
 if nargin<7
-	normalize=0;
+	doScale=0;
 end
 
-switch plottype
-	case 0
-		F=abs(G).^2;
-	case 1
-		F=abs(G);
-	case 2
-		F=real(G);
-	case 3
-		F=imag(G);
-	otherwise
-		F=real(G);
-end
+F=spatialMap(G,plottype,doScale);
 
-if normalize~=0
- 	maxF=max(abs(F(:)));
- 	F=F/maxF; % normalize entries to interval [-1.0,1.0]
-end
-
-% make radius<=1 an affine mapping of the spherical harmonic value
+%% make radius<=1 an affine mapping of the spherical harmonic value
 radius=abs(ref_sphere + bump_height*F)/(ref_sphere+bump_height);
 
 % convert to 3D Cartesian mesh

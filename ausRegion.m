@@ -36,7 +36,7 @@ pv=linspace(min_phi,max_phi,numpp)*pi/180;
 
 [theta,phi]=ndgrid(tv,pv);
 
-% convert the coastline data from degrees to radians
+% change the coastline data from degrees to radians
 R_theta=R_theta*pi/180;
 R_phi=R_phi*pi/180;
 

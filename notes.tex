@@ -38,7 +38,7 @@ We use the Schmidt semi-normalized Legendre functions because they are implement
 As defined and implemented in MATLAB, the Schmidt semi-normalized (associated) Legendre functions are:
 \color{blue}\begin{verbatim}
 SP(N,M;X) = P(N,X), M = 0
-			 = (-1)^M * sqrt(2*(N-M)!/(N+M)!) * P(N,M;X), M > 0
+          = (-1)^M * sqrt(2*(N-M)!/(N+M)!) * P(N,M;X), M > 0
 \end{verbatim}\color{black}
 that is,
 \[
@@ -77,7 +77,7 @@ and so we have
 \label{eqn:sps}
 	S_{\ell}^{m}(z)=
 		\begin{cases}
-			2\,S\!P_{\ell}^{0}(z) &m=0 \\[2mm]
+			\sqrt{2}\,S\!P_{\ell}^{0}(z) &m=0 \\[2mm]
 			S\!P_{\ell}^{m}(z) &m>0
 		\end{cases}
 \end{equation}

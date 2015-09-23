@@ -1,50 +1,72 @@
 function run_Globe
-%run_Globe recontruct spherical data from data files found at
+%%run_Globe recontruct spherical data from data files found at
 % https://geodesy.curtin.edu.au/research/models/Earth2012/
 % http://www.ipgp.fr/~wieczor/SH/SH.html
 % This demonstrates the inverse sphericsal harmonic transform, that is,
 % going from the spectral domain to the spatial domain
 
-close all;
-L_max=600; % maximum included spherical harmonic degree
+%%
+L_max=200; % maximum included spherical harmonic degree
 ntt=max(21,L_max+1); % number of points in theta
 npp=max(41,2*L_max+1); % number of points in phi
 % ntt=201;
 % npp=221;
+name='';
 
-for bodyIndex=1:6
+%% iterate over celestial bodies
+for bodyIndex=4:4
 	switch bodyIndex
 		case 1
 			globe='Earth2012.topo_bathy_bed.SHCto2160.shape';
 			name='Earth2012-bed';
 			cmap='parula';
+         az=40;  el=-15;
 		case 2
 			globe='Earth2012.topo_bathy.SHCto2160.shape';
 			name='Earth2012';
 			cmap='parula';
+         az=40;  el=-15;
 		case 3
-			globe='Earth2012.topo_bathy.SHCto2160.shape';
+			globe='Earth2012.topo_air.SHCto2160.shape';
 			name='Earth2012_air';
 			cmap='parula';
+         az=40;  el=-15;
 		case 4
 			globe='MarsTopo2600.shape';
 			name='Mars';
-			cmap='hot';
+			cmap='parula';
+         az=180;  el=0;
 		case 5
 			globe='VenusTopo719.shape';
 			name='Venus';
 			cmap='hot';
+         az=180;  el=0;
 		case 6
 			globe='MoonTopo2600p.shape';
 			name='Moon';
 			cmap='parula';
+         az=180;  el=0;
 	end
 
-	[f,theta,phi]=spatial_globe(L_max,ntt,npp,globe);
-	s=spatial_plot(f,theta,phi,0.05,1.0,2);
+	%%
+	[F,theta,phi]=ishtFromShapeFile(L_max,ntt,npp,globe);
+
+	% figure and data output
+	base=userpath;  base(end)='/'; % ~/Documents/MATLAB
+	figs_folder=[base 'figs/'];
+	frames_basename=sprintf('%s_%04d',[base 'frames/' name],L_max);
+   figs_basename=sprintf('%s_%04d',[figs_folder name],L_max);
+	save([figs_basename '.mat'],'F','theta','phi');
+
+	%renderGlobe(F,theta,phi,L_max,name,0.05,1.0,2,cmap,az,el,figs_basename,frames_basename)
+
+	% render the globe to figure
+	close all;
+	s=spatial_plot(F,theta,phi,0.05,1.0,2);%0.05
 	colormap(cmap)
 	s.EdgeColor='none'; % no lines
 
+	% annotate the figure
 	llabel=sprintf('$L_{\\mathrm{max}}=%d$',L_max);
 	delete(findall(gcf,'Tag','myLabel'));
 	a=annotation('textbox',[0.7,0.89,0.28,0.1],'String',llabel);
@@ -59,19 +81,24 @@ for bodyIndex=1:6
 	fig.Position(4)=600;
 
 	% output to png file to current directory
-	outname=sprintf('figs/%s_%04d',name,L_max);
 	set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
-	saveas(gcf,outname,'png')
-end
+	saveas(gcf,figs_basename,'png')
 
-if 0 % render out frames for a movie on osx
-	view(40,-15) % set viewpoint
-	for i=0:359
-		set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
-		rotname=sprintf('frames/globerot_%04d', i);
-		camorbit(1.0,0.0); drawnow; saveas(gcf,rotname,'png')
+   return
+	%% render eigenfunction movie on osx; needs avconv - get via brew install libav
+	if ~system('which avconv >/dev/null')
+		view(az,el) % set viewpoint
+		for i=0:3%58
+			set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
+			rotname=sprintf('%s_%04d',frames_basename,i);
+			camorbit(1.0,0.0); drawnow; saveas(gcf,rotname,'png')
+		end
+		renderMovWithAvconv=sprintf(...
+			'avconv -framerate 30 -y -v quiet -f image2 -i %s_%%04d.png %s.mov',...
+			frames_basename,frames_basename);
+		if ~system(renderMovWithAvconv) % make compressed mov
+         cleanup=sprintf('rm %s*.png',frames_basename);
+         system(cleanup); % delete frames
+      end
 	end
-
-	% setenv('DYLD_LIBRARY_PATH','/usr/local/bin/');
-	system('/opt/local/bin/convert -delay 50 -loop 0 frames/globerot_*.png globerot.gif');
 end

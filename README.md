@@ -25,3 +25,21 @@ Some routines for spherical harmonic transform related work
 	- n=l*(l+1)+m
 	- l=floor(sqrt(r-1)); m=r-1-l*(l+1);
 	- when bandlimited the maximum non-zero index is N_max=(L_max+1)^2-1, and N_tot=(L_max+1)^2
+
+### Spherical Harmonics on a Rectangular Grid
+
+Here because the samples are separable with iso-latitude rings then the Associated Legendre
+functions are minimized and the Spherical Harmonic computation is fast.  The Spherical Harmonics
+are
+
+- function [Ylm,theta,phi]=sphHarmGrid(l,m,tv,pv)
+	- computes Y_l^m on the sample grid [theta,phi]=ndgrid(tv,pv)
+- function [YB,theta,phi]=sphHarmGridBank(l,tv,pv)
+	- generates an cell array "Bank" Y_l^0,Y_l^1,...,Y_l^m
+- function [Ylm,theta,phi]=sphHarmGridBankm(l,m,tv,pv)
+	- same interface as sphHarmGrid but computed via sphHarmGridBank
+	- essentially Ylm=YB{m+1} where YB comes from sphHarmGridBank
+
+### Spherical Harmonics on an Unstructured or Non-separable Grid
+
+	Inverse Spherical Harmonic Transform

@@ -1,11 +1,16 @@
-function run_SlepianD(aus)
+function run_SlepianD(aus,testEnergy)
 %run_SlepianD: compute and plot Slepian eigenfunctions on the sphere (8.27) and (8.29)
 
-if nargin < 1
-	aus=1; % default is not to do Australia
+if nargin<1
+	aus=1; % default is to do Australia
+end
+if nargin<2
+	testEnergy=0;
 end
 
-dir='~/Documents/MATLAB/frames/';
+base=userpath;
+base(end)='/'; % ~/Documents/MATLAB
+frames_folder=[base 'frames/'];
 
 intginc=0.1; % fine grid for integration (degrees)
 medinc=0.5; % medium grid for smooth plotting (degrees)
@@ -36,7 +41,7 @@ else % any number of non-intersecting regular subregions
 	basename='reg';
 end
 
-for L_max=3:5 % range of L_max
+for L_max=3:3 % range of L_max
 	fprintf('\n@@ L_max: %d\n',L_max)
 	% populate the N_tot x N_tot Hermitian D matrix (8.27)
 	N_tot=(L_max+1)^2;
@@ -57,16 +62,16 @@ for L_max=3:5 % range of L_max
 	[V,lamD]=eig(D); % eigen-structure
 	% stem(flip(diag(lamD))) % plot the eigenvalues
 
-	for eigindex=0:3%N_tot-1 % 0:N_tot-1 eigenvalue index 0,1,2 in descending energy order
+	for eigindex=0:N_tot-1 %0:3%N_tot-1 % 0:N_tot-1 eigenvalue index 0,1,2 in descending energy order
 		fprintf('\n@@ Eigenindex: %d\n',eigindex)
 		lambda=min(max(lamD(end-eigindex,end-eigindex),0.0),1.0);
 		fprintf('@@ Eigenvalue %d: %8.6f\n',eigindex,lambda)
 
-		%%%% spectral Slepian eigenvector
+		%% spectral Slepian eigenvector
 		w=V(:,end-eigindex); % eigenvector - SHT of Slepian function
 		w=w/norm(w); % normalize eigenvector (actually this is superfluous)
 
-		if 0 % test spatial energy of slepian function is unity
+		if testEnergy~=0 % test spatial energy of slepian function is unity
 			spectralEnergy=norm(w)^2; % will be 1 but just check
 			fprintf('@@ Spectral Energy: %8.6f\n',spectralEnergy)
 
@@ -74,14 +79,14 @@ for L_max=3:5 % range of L_max
 			tv_intg=(0:intginc:180)*pi/180;
 			pv_intg=(0:intginc:360)*pi/180;
 
-			%%%% spatial Slepian eigenfunction [slepian,theta,phi]
+			%% spatial Slepian eigenfunction [slepian,theta,phi]
 			[slepian,~,~]=spatial(w,tv_intg,pv_intg); % ISHT; theta,phi unused
 
 			spatialEnergy=trapSphereMaskedR(abs(slepian).^2,tv_intg,pv_intg);
 			fprintf('@@ Spatial Energy: %8.6f\n',spatialEnergy)
 		end
 
-		% plot eigenfunction in spatial domain
+		%% plot eigenfunction in spatial domain
 		close % prepare fresh figure
 		bump_height=0.15;
 		ref_sphere=1.0;
@@ -106,19 +111,8 @@ for L_max=3:5 % range of L_max
 			fill3(aus_coast(1,idx),aus_coast(2,idx),aus_coast(3,idx), ...
 				'yellow','EdgeColor','None');
 			% draw Australia coastline on Slepian surface
-			rR=interpn(theta_plot,phi_plot,slepian_plot,tR,pR)/maxSlepian; % very slick
-			switch plottype
-				case 0
-					F=abs(rR).^2;
-				case 1
-					F=abs(rR);
-				case 2
-					F=real(rR);
-				case 3
-					F=imag(rR);
-				otherwise
-					F=real(rR);
-			end
+			rR=interpn(theta_plot,phi_plot,slepian_plot,tR,pR); % very slick
+			F=spatialMap(rR/maxSlepian,plottype);
 			rad=abs(ref_sphere + bump_height*F)/(ref_sphere+bump_height);
 			aus_coast=[rad.*sin(tR).*cos(pR); rad.*sin(tR).*sin(pR); rad.*cos(tR)];
 			plot3(aus_coast(1,:),aus_coast(2,:),aus_coast(3,:),'yellow','LineWidth',2);
@@ -133,7 +127,6 @@ for L_max=3:5 % range of L_max
 				reg=spatial(w,tv_intg,pv_intg,0);
 				lambda_est=lambda_est+trapSphereMaskedR(abs(reg).^2,tv_intg,pv_intg);
 			end
-			lambda_est=lambda_est;
 			fprintf('@@ Region Energy: %8.6f (eigenvalue %8.6f)\n',lambda_est,lambda)
 
 			% Plot sub-regions
@@ -158,21 +151,18 @@ for L_max=3:5 % range of L_max
 		hold off
 
 		% output to png file (directory needs to exist)
-		outname=sprintf('%s_%04d_%04d',[dir basename],L_max,eigindex);
+		outname=sprintf('%s_%04d_%04d',[frames_folder basename],L_max,eigindex);
 		set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
 		saveas(gcf,outname,'png')
    end
 
-   % render movie on osx; needs convert and avconv via brew install libav
-   status=system('which convert');
-   
-	if status==0 
-		%setenv('PATH', [getenv('PATH') ':/usr/local/bin:/usr/local/bin']);
-      %setenv('DYLD_LIBRARY_PATH', '/usr/local/bin/');
-		rendermovie=sprintf('convert -delay 30 -quality 100 %s_%04d_* %sm-%04d.mov', ...
-			[dir basename],L_max,[dir basename],L_max);
-		system(rendermovie); % make compressed mov
-      cleanup=sprintf('rm %s_%04d*.png', [dir basename],L_max)
+	%% render eigenfunction movie on osx; needs avconv - get via brew install libav
+	if ~system('which avconv >/dev/null')
+		renderMovWithAvconv=sprintf(...
+			'avconv -framerate 2 -y -v quiet -f image2 -i %s_%04d_%%04d.png %sm-%04d.mov',...
+			[frames_folder basename],L_max,[frames_folder basename],L_max);
+		system(renderMovWithAvconv); % make compressed mov
+      cleanup=sprintf('rm %s_%04d*.png',[frames_folder basename],L_max);
 		system(cleanup); % delete frames
 	end
 end
