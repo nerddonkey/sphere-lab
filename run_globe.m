@@ -1,19 +1,18 @@
 function run_Globe
-%%run_Globe recontruct spherical data from data files found at
-% https://geodesy.curtin.edu.au/research/models/Earth2012/
-% http://www.ipgp.fr/~wieczor/SH/SH.html
+%%run_Globe recontruct spherical data from shape planetary data files
+% found at:
+%    https://geodesy.curtin.edu.au/research/models/Earth2012/
+%    http://www.ipgp.fr/~wieczor/SH/SH.html
+%
 % This demonstrates the inverse sphericsal harmonic transform, that is,
-% going from the spectral domain to the spatial domain
+% going from the spectral domain to the spatial domain.
 
 %%
-L_max=200; % maximum included spherical harmonic degree
+L_max=400; % maximum included spherical harmonic degree
 ntt=max(21,L_max+1); % number of points in theta
-npp=max(41,2*L_max+1); % number of points in phi
-% ntt=201;
-% npp=221;
-name='';
+npp=max(41,2*L_max+1); % number of points in phi (here first and last phi are the same)
 
-%% iterate over celestial bodies
+%% iterate over celestial bodies (files need to be downloaded and in the path)
 for bodyIndex=4:4
 	switch bodyIndex
 		case 1
@@ -48,7 +47,7 @@ for bodyIndex=4:4
          az=180;  el=0;
 	end
 
-	%%
+	%% Get the data from the shape file
 	[F,theta,phi]=ishtFromShapeFile(L_max,ntt,npp,globe);
 
 	% figure and data output
@@ -58,15 +57,17 @@ for bodyIndex=4:4
    figs_basename=sprintf('%s_%04d',[figs_folder name],L_max);
 	save([figs_basename '.mat'],'F','theta','phi');
 
-	%renderGlobe(F,theta,phi,L_max,name,0.05,1.0,2,cmap,az,el,figs_basename,frames_basename)
+	% thinking of making the rest a function so the F,theta,phi data in a *.mat
+	% file can be drawn
+	% renderGlobe(F,theta,phi,L_max,name,0.05,1.0,2,cmap,az,el,figs_basename,frames_basename)
 
-	% render the globe to figure
+	%% render the globe to figure
 	close all;
-	s=spatial_plot(F,theta,phi,0.05,1.0,2);%0.05
+	s=spatialPlot(F,theta,phi,0.05,1.0,2);%0.05
 	colormap(cmap)
 	s.EdgeColor='none'; % no lines
 
-	% annotate the figure
+	%% annotate the figure
 	llabel=sprintf('$L_{\\mathrm{max}}=%d$',L_max);
 	delete(findall(gcf,'Tag','myLabel'));
 	a=annotation('textbox',[0.7,0.89,0.28,0.1],'String',llabel);
@@ -80,15 +81,14 @@ for bodyIndex=4:4
 	fig.Position(3)=600;
 	fig.Position(4)=600;
 
-	% output to png file to current directory
+	%% output to png file to current directory
 	set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
 	saveas(gcf,figs_basename,'png')
 
-   return
 	%% render eigenfunction movie on osx; needs avconv - get via brew install libav
 	if ~system('which avconv >/dev/null')
 		view(az,el) % set viewpoint
-		for i=0:3%58
+		for i=0:358
 			set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
 			rotname=sprintf('%s_%04d',frames_basename,i);
 			camorbit(1.0,0.0); drawnow; saveas(gcf,rotname,'png')

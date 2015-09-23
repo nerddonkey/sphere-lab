@@ -1,6 +1,8 @@
 function [F,theta,phi]=ishtGrid2(w,tv,pv,useProgressBar)
 %ishtGrid2
 
+addpath code/
+
 if nargin<4
 	useProgressBar=0;
 end
@@ -26,7 +28,6 @@ for l=0:L_max
 	for m=0:l
 		n=l*(l+1)+m;  n1=l*(l+1)-m; % (7.39)
 		wlm=w(n+1);  wlm1=w(n1+1); % the weight for degree l and order m
-		if wlm==0 && wlm1==0; continue; end % skip if zero
 		Slm=Sl(m+1,:)'; % pull out S_l^m (evaluated on theta vector tt)
 		Ylm=(-1)^m*Ql*kron(ones(size(pv)),Slm).*exp(1j*m*phi);
 		F=F+wlm*Ylm; % m contribution

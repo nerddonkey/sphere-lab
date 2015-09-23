@@ -1,5 +1,5 @@
-function [s]=spatial_plot(G,theta,phi,bump_height,ref_sphere,plottype,doScale)
-%spatial_plot
+function [s]=spatialPlot(G,theta,phi,bump_height,ref_sphere,plottype,doScale)
+%spatialPlot
 
 %% default parameters
 if nargin<4

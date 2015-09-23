@@ -83,9 +83,9 @@ else % whole world
 end
 
 %% Perform the ISHT from w to F on separable mesh [theta,phi]=ndgrid(tv,pv)
-%[F,theta,phi]=ishtGrid2(w,tv,pv,1);
+% slower [F,theta,phi]=ishtGrid2(w,tv,pv,1);
 doReal=1;
-[F,theta,phi]=ishtRectGridFFT(w,tv,pv,1,doReal);
+[F,theta,phi]=ishtRectGrid(w,tv,pv,1,doReal);
 
 %% Normalize entries to interval [-1.0,1.0]
 if doScale

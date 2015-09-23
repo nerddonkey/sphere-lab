@@ -2,6 +2,8 @@ function F=isht(w,theta,phi,useProgressBar)
 %isht
 % Y_l^m = (-1)^m NSl P_l^m(sch) e^m\phi
 
+addpath code/
+
 if nargin<4
 	useProgressBar=0;
 end

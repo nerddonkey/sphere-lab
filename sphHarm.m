@@ -11,7 +11,7 @@ S_max=numel(theta);
 for s=1:S_max % walk thru theta,phi matrices as vectors
 	Sl=legendre(l,cos(theta(s)),'sch'); % vector in m, scalar in theta
 	Slm=Sl(abs(m)+1,1); % pull out scalar S_l^|m| (scalar theta)
-	Ylm(s)=Qlm*Slm.*exp(1j*m*phi(s)); % scalar (implicit 'conj' for m<0)
+	Ylm(s)=Qlm*Slm*exp(1j*m*phi(s)); % scalar (implicit 'conj' for m<0)
 end
 
 if m==0

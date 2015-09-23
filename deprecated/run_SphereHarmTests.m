@@ -86,7 +86,7 @@ maxY=max(abs(Ylm(:)));
 Ylm=Ylm/maxY;
 figure
 bump_height=0.8; ref_sphere=1.0; plottype=2; % real
-s=spatial_plot(Ylm,theta,phi,bump_height,ref_sphere,plottype);
+s=spatialPlot(Ylm,theta,phi,bump_height,ref_sphere,plottype);
 s.EdgeColor='black'; % 'none'
 fig=gcf;
 fig.Position(1)=pos;

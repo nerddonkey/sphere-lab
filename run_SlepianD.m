@@ -1,5 +1,5 @@
 function run_SlepianD(aus,testEnergy)
-%run_SlepianD: compute and plot Slepian eigenfunctions on the sphere (8.27) and (8.29)
+%run_SlepianD compute and plot Slepian eigenfunctions on the sphere (8.27) and (8.29)
 
 if nargin<1
 	aus=1; % default is to do Australia
@@ -9,8 +9,8 @@ if nargin<2
 end
 
 base=userpath;
-base(end)='/'; % ~/Documents/MATLAB
-frames_folder=[base 'frames/'];
+base(end)='/'; % ~/Documents/MATLAB/
+frames_folder=[base 'frames/']; % ~/Documents/MATLAB/frames/
 
 intginc=0.1; % fine grid for integration (degrees)
 medinc=0.5; % medium grid for smooth plotting (degrees)
@@ -41,9 +41,9 @@ else % any number of non-intersecting regular subregions
 	basename='reg';
 end
 
-for L_max=3:3 % range of L_max
+%% Populate the N_tot x N_tot Hermitian D matrix (8.27)
+for L_max=8:8
 	fprintf('\n@@ L_max: %d\n',L_max)
-	% populate the N_tot x N_tot Hermitian D matrix (8.27)
 	N_tot=(L_max+1)^2;
 	if aus % irregular non-simply-connected (uses mask)
 		D=SlepianDH(L_max,tv_aus,pv_aus,mask_aus);
@@ -62,12 +62,12 @@ for L_max=3:3 % range of L_max
 	[V,lamD]=eig(D); % eigen-structure
 	% stem(flip(diag(lamD))) % plot the eigenvalues
 
-	for eigindex=0:N_tot-1 %0:3%N_tot-1 % 0:N_tot-1 eigenvalue index 0,1,2 in descending energy order
+	for eigindex=0:N_tot-1 % 0:N_tot-1 eigenvalue index 0,1,2 in descending energy order
 		fprintf('\n@@ Eigenindex: %d\n',eigindex)
 		lambda=min(max(lamD(end-eigindex,end-eigindex),0.0),1.0);
 		fprintf('@@ Eigenvalue %d: %8.6f\n',eigindex,lambda)
 
-		%% spectral Slepian eigenvector
+		% spectral Slepian eigenvector
 		w=V(:,end-eigindex); % eigenvector - SHT of Slepian function
 		w=w/norm(w); % normalize eigenvector (actually this is superfluous)
 
@@ -79,24 +79,24 @@ for L_max=3:3 % range of L_max
 			tv_intg=(0:intginc:180)*pi/180;
 			pv_intg=(0:intginc:360)*pi/180;
 
-			%% spatial Slepian eigenfunction [slepian,theta,phi]
-			[slepian,~,~]=spatial(w,tv_intg,pv_intg); % ISHT; theta,phi unused
+			% spatial Slepian eigenfunction [slepian,theta,phi]
+			[slepian,~,~]=ishtRectGrid(w,tv_intg,pv_intg); % ISHT; theta,phi unused
 
 			spatialEnergy=trapSphereMaskedR(abs(slepian).^2,tv_intg,pv_intg);
 			fprintf('@@ Spatial Energy: %8.6f\n',spatialEnergy)
-		end
+      end
 
-		%% plot eigenfunction in spatial domain
+      %% Plot eigenfunction in spatial domain
 		close % prepare fresh figure
 		bump_height=0.15;
 		ref_sphere=1.0;
 		plottype=1;
 		tv_plot=(0:medinc:180)*pi/180;
 		pv_plot=(0:medinc:360)*pi/180;
-		[slepian_plot,theta_plot,phi_plot]=spatial(w,tv_plot,pv_plot,1);
+		[slepian_plot,theta_plot,phi_plot]=ishtRectGrid(w,tv_plot,pv_plot,1);
 		maxSlepian=max(abs(slepian_plot(:))); % for plot normalization
 		fprintf('@@ Max Slepian: %8.6f\n',maxSlepian)
-		s=spatial_plot(slepian_plot/maxSlepian,theta_plot,phi_plot, ...
+		s=spatialPlot(slepian_plot/maxSlepian,theta_plot,phi_plot, ...
 			bump_height,ref_sphere,plottype);
 		s.EdgeColor='none'; % no lines
 		s.FaceAlpha=0.8;
@@ -124,7 +124,7 @@ for L_max=3:3 % range of L_max
 			for r=1:size(tr,1) % loop over subregions (fine grid)
 				tv_intg=(tr(r,1):intginc:tr(r,2))*pi/180;
 				pv_intg=(pr(r,1):intginc:pr(r,2))*pi/180;
-				reg=spatial(w,tv_intg,pv_intg,0);
+				reg=ishtRectGrid(w,tv_intg,pv_intg,0);
 				lambda_est=lambda_est+trapSphereMaskedR(abs(reg).^2,tv_intg,pv_intg);
 			end
 			fprintf('@@ Region Energy: %8.6f (eigenvalue %8.6f)\n',lambda_est,lambda)
@@ -133,13 +133,13 @@ for L_max=3:3 % range of L_max
 			for r=1:size(tr,1) % loop over subregions (coarse grid)
 				ttcr=(tr(r,1):plotinc:tr(r,2))*pi/180;
 				ppcr=(pr(r,1):plotinc:pr(r,2))*pi/180;
-				[r_reg,theta_reg,phi_reg]=spatial(w,ttcr,ppcr,0);
-				s=spatial_plot(1.01*r_reg/maxSlepian,theta_reg,phi_reg);
+				[r_reg,theta_reg,phi_reg]=ishtRectGrid(w,ttcr,ppcr,0);
+				s=spatialPlot(1.01*r_reg/maxSlepian,theta_reg,phi_reg);
 				s.EdgeColor='yellow'; % no lines
 			end
 		end
 
-		% Annotate plot
+		%% Annotate plot
 		llabel=sprintf('$L_{\\mathrm{max}}=%d$\n$\\lambda_{%d}=%8.6f$', ...
 			L_max,eigindex,lambda);
 		delete(findall(gcf,'Tag','myLabel'));
@@ -150,13 +150,13 @@ for L_max=3:3 % range of L_max
 		a.Tag='myLabel';
 		hold off
 
-		% output to png file (directory needs to exist)
+		%% Output to png file (directory needs to exist)
 		outname=sprintf('%s_%04d_%04d',[frames_folder basename],L_max,eigindex);
 		set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
 		saveas(gcf,outname,'png')
    end
 
-	%% render eigenfunction movie on osx; needs avconv - get via brew install libav
+%% Render eigenfunction movie on osx; needs avconv - get via brew install libav
 	if ~system('which avconv >/dev/null')
 		renderMovWithAvconv=sprintf(...
 			'avconv -framerate 2 -y -v quiet -f image2 -i %s_%04d_%%04d.png %sm-%04d.mov',...
