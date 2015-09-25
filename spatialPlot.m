@@ -33,8 +33,8 @@ s=surf(x,y,z,F); % last argument determines colormap
 s.LineWidth=0.1; % for finer lines in printing/png
 
 fig=gcf;
-fig.Position(3)=450;
-fig.Position(4)=450;
+fig.Position(3)=600;
+fig.Position(4)=600;
 
 fa=fig.CurrentAxes;
 

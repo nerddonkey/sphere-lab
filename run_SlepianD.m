@@ -1,8 +1,8 @@
-function run_SlepianD(aus,testEnergy)
+function run_SlepianD(exampleIndex,testEnergy)
 %run_SlepianD compute and plot Slepian eigenfunctions on the sphere (8.27) and (8.29)
 
 if nargin<1
-	aus=1; % default is to do Australia
+	exampleIndex=0; % default is to do Australia
 end
 if nargin<2
 	testEnergy=0;
@@ -22,39 +22,47 @@ fprintf('@@ Coarse Grid: %.2f (degrees)\n',plotinc)
 
 close all
 
-if aus % region is Australia including Tasmania
-	[tv_aus,pv_aus,mask_aus,tR,pR]=ausRegion(medinc,1);
-	basename='aus';
-	% tv_aus,pv_aus are the bounding vectors of the rectangle containing
-	% Australia. mask_aus is the 0-1 matrix indicating Australia within the
-	% rectangle. tR,pR define the coastline with NaN separating subregions.
-else % any number of non-intersecting regular subregions
-	% subregion 1
-	tr(1,:)=[30 60];
-	pr(1,:)=[-70 -10];
-	% subregion 2
-	tr(2,:)=[80 110];
-	pr(2,:)=[-70 -10];
-	% subregion 3
-	tr(3,:)=[20 70];
-	pr(3,:)=[0 40];
-	basename='reg';
+switch exampleIndex
+	case 0 % region is Australia including Tasmania
+		[tv_aus,pv_aus,mask_aus,tR,pR]=ausRegion(0,medinc,1);
+		basename='australia';
+	case 1 % region is Australia excluding Tasmania
+		[tv_aus,pv_aus,mask_aus,tR,pR]=ausRegion(1,medinc,1);
+		basename='mainland';
+	case 2 % equatorial band
+		% subregion 1
+		tr(1,:)=[60 100];
+		pr(1,:)=[0,300];
+		basename='band';
+	case 3 % anumber of non-intersecting regular subregions
+		% subregion 1
+		tr(1,:)=[30 60];
+		pr(1,:)=[-70 -10];
+		% subregion 2
+		tr(2,:)=[80 110];
+		pr(2,:)=[-70 -10];
+		% subregion 3
+		tr(3,:)=[20 70];
+		pr(3,:)=[0 40];
+		basename='reg3';
 end
 
 %% Populate the N_tot x N_tot Hermitian D matrix (8.27)
-for L_max=8:8
+for L_max=4:4
 	fprintf('\n@@ L_max: %d\n',L_max)
 	N_tot=(L_max+1)^2;
-	if aus % irregular non-simply-connected (uses mask)
-		D=SlepianDH(L_max,tv_aus,pv_aus,mask_aus);
-	else
-		D=zeros(N_tot,N_tot); % allocate and initialize to zero
-		for r=1:size(tr,1) % loop over subregions
-			tv_intg=(tr(r,1):intginc:tr(r,2))*pi/180;
-			pv_intg=(pr(r,1):intginc:pr(r,2))*pi/180;
-			D=D+SlepianDH(L_max,tv_intg,pv_intg); % accumulate
-			fprintf('@@ Completed D for Region: %d\n',r)
-		end
+
+	switch exampleIndex
+		case {0,1} % irregular non-simply-connected (uses mask)
+			D=SlepianDH(L_max,tv_aus,pv_aus,mask_aus);
+		case {2,3}
+			D=zeros(N_tot,N_tot); % allocate and initialize to zero
+			for r=1:size(tr,1) % loop over subregions
+				tv_intg=(tr(r,1):intginc:tr(r,2))*pi/180;
+				pv_intg=(pr(r,1):intginc:pr(r,2))*pi/180;
+				D=D+SlepianDH(L_max,tv_intg,pv_intg); % accumulate
+				fprintf('@@ Completed D for Region: %d\n',r)
+			end
 	end
 	fprintf('@@ Size of D matrix: %dx%d\n', size(D))
 
@@ -84,64 +92,61 @@ for L_max=8:8
 
 			spatialEnergy=trapSphereMaskedR(abs(slepian).^2,tv_intg,pv_intg);
 			fprintf('@@ Spatial Energy: %8.6f\n',spatialEnergy)
-      end
+		end
 
-      %% Plot eigenfunction in spatial domain
+		%% Plot eigenfunction in spatial domain
 		close % prepare fresh figure
-		bump_height=0.15;
-		ref_sphere=1.0;
-		plottype=1;
+		bump=0.15; ref=1.0; ptype=1;
 		tv_plot=(0:medinc:180)*pi/180;
 		pv_plot=(0:medinc:360)*pi/180;
 		[slepian_plot,theta_plot,phi_plot]=ishtRectGrid(w,tv_plot,pv_plot,1);
 		maxSlepian=max(abs(slepian_plot(:))); % for plot normalization
 		fprintf('@@ Max Slepian: %8.6f\n',maxSlepian)
-		s=spatialPlot(slepian_plot/maxSlepian,theta_plot,phi_plot, ...
-			bump_height,ref_sphere,plottype);
+		s=spatialPlot(slepian_plot/maxSlepian,theta_plot,phi_plot, bump,ref,ptype);
 		s.EdgeColor='none'; % no lines
 		s.FaceAlpha=0.8;
 		colormap('cool') % or copper
+		set(gcf,'MenuBar','none');
+		set(gcf,'ToolBar','none');
 		hold on
 
-		if aus==1
-			% fill Australia area on zero/reference surface
-			aus_coast=ref_sphere*[sin(tR).*cos(pR); sin(tR).*sin(pR); cos(tR)]/ ...
-				(ref_sphere+bump_height);
-			idx = any([~isnan(tR);~isnan(tR)],1);
-			fill3(aus_coast(1,idx),aus_coast(2,idx),aus_coast(3,idx), ...
-				'yellow','EdgeColor','None');
-			% draw Australia coastline on Slepian surface
-			rR=interpn(theta_plot,phi_plot,slepian_plot,tR,pR); % very slick
-			F=spatialMap(rR/maxSlepian,plottype);
-			rad=abs(ref_sphere + bump_height*F)/(ref_sphere+bump_height);
-			aus_coast=[rad.*sin(tR).*cos(pR); rad.*sin(tR).*sin(pR); rad.*cos(tR)];
-			plot3(aus_coast(1,:),aus_coast(2,:),aus_coast(3,:),'yellow','LineWidth',2);
-			view(-100,-30) % set viewpoint
-			set(gca,'CameraViewAngle',9) % zoom into scene
-		else
-			% Compute energy in sub-regions
-			lambda_est=0;
-			for r=1:size(tr,1) % loop over subregions (fine grid)
-				tv_intg=(tr(r,1):intginc:tr(r,2))*pi/180;
-				pv_intg=(pr(r,1):intginc:pr(r,2))*pi/180;
-				reg=ishtRectGrid(w,tv_intg,pv_intg,0);
-				lambda_est=lambda_est+trapSphereMaskedR(abs(reg).^2,tv_intg,pv_intg);
-			end
-			fprintf('@@ Region Energy: %8.6f (eigenvalue %8.6f)\n',lambda_est,lambda)
+		switch exampleIndex
+			case {0,1} % fill Australia area on zero/reference surface
+				aus_coast=ref*[sin(tR).*cos(pR); sin(tR).*sin(pR); cos(tR)]/ ...
+					(ref+bump);
+				idx = any([~isnan(tR);~isnan(tR)],1);
+				fill3(aus_coast(1,idx),aus_coast(2,idx),aus_coast(3,idx), ...
+					'w','EdgeColor','None');
+				% draw Australia coastline on Slepian surface
+				rR=interpn(theta_plot,phi_plot,slepian_plot,tR,pR); % very slick
+				F=spatialMap(rR/maxSlepian,ptype);
+				rad=abs(ref + bump*F)/(ref+bump);
+				aus_coast=[rad.*sin(tR).*cos(pR); rad.*sin(tR).*sin(pR); rad.*cos(tR)];
+				plot3(aus_coast(1,:),aus_coast(2,:),aus_coast(3,:),'w','LineWidth',2);
+				view(-100,-30) % set viewpoint
+				set(gca,'CameraViewAngle',9) % zoom into scene
+			case {2,3} % Compute energy in sub-regions
+				lambda_est=0;
+				for r=1:size(tr,1) % loop over subregions (fine grid)
+					tv_intg=(tr(r,1):intginc:tr(r,2))*pi/180;
+					pv_intg=(pr(r,1):intginc:pr(r,2))*pi/180;
+					reg=ishtRectGrid(w,tv_intg,pv_intg,0);
+					lambda_est=lambda_est+trapSphereMaskedR(abs(reg).^2,tv_intg,pv_intg);
+				end
+				fprintf('@@ Region Energy: %8.6f (eigenvalue %8.6f)\n',lambda_est,lambda)
 
-			% Plot sub-regions
-			for r=1:size(tr,1) % loop over subregions (coarse grid)
-				ttcr=(tr(r,1):plotinc:tr(r,2))*pi/180;
-				ppcr=(pr(r,1):plotinc:pr(r,2))*pi/180;
-				[r_reg,theta_reg,phi_reg]=ishtRectGrid(w,ttcr,ppcr,0);
-				s=spatialPlot(1.01*r_reg/maxSlepian,theta_reg,phi_reg);
-				s.EdgeColor='yellow'; % no lines
-			end
+				% Plot sub-regions
+				for r=1:size(tr,1) % loop over subregions (coarse grid)
+					ttcr=(tr(r,1):plotinc:tr(r,2))*pi/180;
+					ppcr=(pr(r,1):plotinc:pr(r,2))*pi/180;
+					[r_reg,theta_reg,phi_reg]=ishtRectGrid(w,ttcr,ppcr,0);
+					s=spatialPlot(1.01*r_reg/maxSlepian,theta_reg,phi_reg);
+					s.EdgeColor='y'; % no lines
+				end
 		end
 
 		%% Annotate plot
-		llabel=sprintf('$L_{\\mathrm{max}}=%d$\n$\\lambda_{%d}=%8.6f$', ...
-			L_max,eigindex,lambda);
+		llabel=sprintf('$L_{\\mathrm{max}}=%d$\n$\\lambda_{%d}=%8.6f$', L_max,eigindex,lambda);
 		delete(findall(gcf,'Tag','myLabel'));
 		a=annotation('textbox',[0.695,0.895,0.28,0.1],'String',llabel);
 		a.Interpreter='latex';
@@ -151,18 +156,20 @@ for L_max=8:8
 		hold off
 
 		%% Output to png file (directory needs to exist)
-		outname=sprintf('%s_%04d_%04d',[frames_folder basename],L_max,eigindex);
+		set(gcf,'InvertHardCopy','off');
+		set(gcf,'color','w'); % Set the figure frame color to white
 		set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
+		outname=sprintf('%s_%04d_%04d',[frames_folder basename],L_max,eigindex);
 		saveas(gcf,outname,'png')
-   end
+	end
 
 %% Render eigenfunction movie on osx; needs avconv - get via brew install libav
 	if ~system('which avconv >/dev/null')
 		renderMovWithAvconv=sprintf(...
-			'avconv -framerate 2 -y -v quiet -f image2 -i %s_%04d_%%04d.png %sm-%04d.mov',...
+			'avconv -framerate 2 -y -v quiet -f image2 -i %s_%04d_%%04d.png %s-%04d.mov',...
 			[frames_folder basename],L_max,[frames_folder basename],L_max);
 		system(renderMovWithAvconv); % make compressed mov
-      cleanup=sprintf('rm %s_%04d*.png',[frames_folder basename],L_max);
+		cleanup=sprintf('rm %s_%04d*.png',[frames_folder basename],L_max);
 		system(cleanup); % delete frames
 	end
 end

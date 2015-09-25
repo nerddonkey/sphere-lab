@@ -8,7 +8,7 @@ function run_Globe
 % going from the spectral domain to the spatial domain.
 
 %%
-L_max=400; % maximum included spherical harmonic degree
+L_max=50; % maximum included spherical harmonic degree
 ntt=max(21,L_max+1); % number of points in theta
 npp=max(41,2*L_max+1); % number of points in phi (here first and last phi are the same)
 
@@ -19,32 +19,32 @@ for bodyIndex=4:4
 			globe='Earth2012.topo_bathy_bed.SHCto2160.shape';
 			name='Earth2012-bed';
 			cmap='parula';
-         az=40;  el=-15;
+			az=40;  el=-15;
 		case 2
 			globe='Earth2012.topo_bathy.SHCto2160.shape';
 			name='Earth2012';
 			cmap='parula';
-         az=40;  el=-15;
+			az=40;  el=-15;
 		case 3
 			globe='Earth2012.topo_air.SHCto2160.shape';
 			name='Earth2012_air';
 			cmap='parula';
-         az=40;  el=-15;
+			az=40;  el=-15;
 		case 4
 			globe='MarsTopo2600.shape';
 			name='Mars';
 			cmap='parula';
-         az=180;  el=0;
+			az=180;  el=0;
 		case 5
 			globe='VenusTopo719.shape';
 			name='Venus';
 			cmap='hot';
-         az=180;  el=0;
+			az=180;  el=0;
 		case 6
 			globe='MoonTopo2600p.shape';
 			name='Moon';
 			cmap='parula';
-         az=180;  el=0;
+			az=180;  el=0;
 	end
 
 	%% Get the data from the shape file
@@ -54,7 +54,7 @@ for bodyIndex=4:4
 	base=userpath;  base(end)='/'; % ~/Documents/MATLAB
 	figs_folder=[base 'figs/'];
 	frames_basename=sprintf('%s_%04d',[base 'frames/' name],L_max);
-   figs_basename=sprintf('%s_%04d',[figs_folder name],L_max);
+	figs_basename=sprintf('%s_%04d',[figs_folder name],L_max);
 	save([figs_basename '.mat'],'F','theta','phi');
 
 	% thinking of making the rest a function so the F,theta,phi data in a *.mat
@@ -82,6 +82,8 @@ for bodyIndex=4:4
 	fig.Position(4)=600;
 
 	%% output to png file to current directory
+	set(gcf,'InvertHardCopy','off');
+	set(gcf,'color',[0.7 0.7 0.7]); % Set the figure frame color to white
 	set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
 	saveas(gcf,figs_basename,'png')
 
@@ -97,8 +99,8 @@ for bodyIndex=4:4
 			'avconv -framerate 30 -y -v quiet -f image2 -i %s_%%04d.png %s.mov',...
 			frames_basename,frames_basename);
 		if ~system(renderMovWithAvconv) % make compressed mov
-         cleanup=sprintf('rm %s*.png',frames_basename);
-         system(cleanup); % delete frames
-      end
+			cleanup=sprintf('rm %s*.png',frames_basename);
+			system(cleanup); % delete frames
+		end
 	end
 end

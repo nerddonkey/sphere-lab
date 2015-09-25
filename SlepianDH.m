@@ -21,8 +21,7 @@ D=zeros(N_tot,N_tot);
 
 %% Number of elements to compute for Hermitian
 total=N_tot*(N_tot+1)/2;
-count=0;
-if useProgressBar~=0; progressbar('SlepianDH overall','inner loop'); end;
+if useProgressBar~=0; count=0; progressbar('SlepianDH overall','inner loop'); end;
 
 %% Populate the Hermitian D using (8.27)
 for r=1:N_tot % rows of D
@@ -30,13 +29,13 @@ for r=1:N_tot % rows of D
 	l=floor(sqrt(r-1)); m=r-1-l*(l+1); % (7.40) here n=r-1
 	f=sphHarmGrid(l,m,tv,pv);
 	D(r,r)=trapSphereMaskedR(f.*conj(f),tv,pv,R_mask); % diagonal element
-	count=count+1; progressbar(count/total,[])
+	if useProgressBar~=0; count=count+1; progressbar(count/total,[]); end
 	for c=r+1:N_tot % columns of D
 		p=floor(sqrt(c-1)); q=c-1-p*(p+1); % (7.40) here n=c-1
 		g=sphHarmGrid(p,q,tv,pv);
 		D(r,c)=trapSphereMaskedR(g.*conj(f),tv,pv,R_mask); % (8.27)
 		D(c,r)=conj(D(r,c)); % Hermitian symmetric element
-		count=count+1; progressbar(count/total,(c-r)/(N_tot-r))
+		if useProgressBar~=0; count=count+1; progressbar(count/total,(c-r)/(N_tot-r)); end
 	end
 	if useProgressBar~=0; progressbar(count/total,[]); end;
 end

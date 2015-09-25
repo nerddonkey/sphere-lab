@@ -12,7 +12,7 @@ if isvector(tt) && isvector(pp) % separable and fast
 	Ylm=Qlm*kron(ones(1,length(pp)),Slm).*exp(1j*m*phi);
 elseif ~isvector(tt) && ~isvector(pp) && isequal(size(tt),size(pp))
 	theta=tt; phi=pp; % pass input mesh to output
-   Ylm=zeros(size(theta)); % defines shape for output
+	Ylm=zeros(size(theta)); % defines shape for output
 	S_max=numel(theta);
 	for s=1:S_max % walk thru mesh as vector
 		Sl=legendre(l,cos(theta(s)),'sch'); % vector in m, scalar in theta

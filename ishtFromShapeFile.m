@@ -69,7 +69,7 @@ fprintf('\n@@ Some of the converted complex SH coefficients\n\n')
 fprintf('     n      l      m               Complex SH Coefficients\n');
 R_max=min(25,L_max); % equivalent number of preview complex SHs
 for n=[0:R_max-1]
-	l=floor(sqrt(n)); m=n-l*(l+1); %(7.40)
+	l=floor(sqrt(n)); m=n-l*(l+1); % (7.40)
 	fprintf('%6d %6d %6d %21.13e%+21.13ej\n',n,l,m,real(w(n+1)),imag(w(n+1)))
 end
 

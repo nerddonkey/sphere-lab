@@ -55,4 +55,3 @@ brew reinstall libav
 % are the order m and the columns are the vector of theta; this is
 % for each degree l.  Similarly the complex exponentials are
 % computed on a matrix mesh.  So the computation is pretty quick.
-

@@ -2,7 +2,7 @@ function Ylm=sphHarm(l,m,theta,phi)
 %sphHarm - see see note.tex/pdf for method
 
 if ~isequal(size(theta),size(phi))
-   error('@@ sphHarm: theta and phi need to be the same size')
+	error('@@ sphHarm: theta and phi need to be the same size')
 end
 
 Qlm=(-1)^m*sqrt((2*l+1)/(8*pi)); % (-1)^m Q_l in note.tex/pdf
