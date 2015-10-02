@@ -8,13 +8,13 @@ function [tv,pv,R_mask,R_theta,R_phi]=ausRegion(main,deginc,plotme)
 % optionally plots the results to verify it makes sense
 
 if nargin<3
-	plotme=0;
+	plotme=false;
 end
 if nargin<2
 	deginc=1.0; % default stepsize in degrees
 end
 if nargin<1
-	main=0; % default include Tasmania
+	main=false; % default include Tasmania
 end
 
 %% Grab MATLAB's built-in world coastline data: coast

@@ -1,4 +1,4 @@
-function [F,theta,phi]=ishtFromShapeFile(L_max,ntv,npv,filename,doScale)
+function [F,theta,phi,L_max,radius]=ishtFromShapeFile(L_req,ntv,npv,filename,doScale)
 %ishtFromShapeFile inverse spherical harmonic transform (spatial function)
 %  from *.shape real spherical harmonic coefficient planetary data
 %
@@ -24,18 +24,21 @@ if nargin<5
 	doScale=1;
 end
 
-%% Determine and display bandwidth parameters
+%% Try to read for requested degree
+Q_req=round((L_req+2)*(L_req+1)/2); % number of m>=0 spherical harmonics
+
+%% Read in real SH coefficients from shape file
+sizeA=[4,Q_req]; % have to read in transpose (4 rows)
+A=fscanf(fid,'%d %d %f %f',sizeA);
+C=A(3,:); % the cos real SH coefficient terms
+S=A(4,:); % the sin real SH coefficient terms
+radius=C(1); % usually but not always the mean radius
+L_max=A(1,end); % this will be the min of L_req and the actual degrees available
+
 Q_tot=round((L_max+2)*(L_max+1)/2); % number of m>=0 spherical harmonics
 N_tot=(L_max+1)^2; % total number of spherical harmonics
 fprintf('\n@@ Numbers of Coefficients\n\n   L_max    Q_max    N_max\n')
 fprintf('%8d %8d %8d', L_max, Q_tot, N_tot)
-
-%% Read in real SH coefficients from shape file
-sizeA=[4 Q_tot]; % have to read in transpose (4 rows)
-A=zeros(sizeA); % allocate
-A=fscanf(fid,'%d %d %f %f',sizeA);
-C=A(3,:); % the cos real SH coefficient terms
-S=A(4,:); % the sin real SH coefficient terms
 
 %% Display top and bottom of data to be used
 P_max=min(15,Q_tot); % number of preview real SH file lines
@@ -75,7 +78,9 @@ end
 
 %% Define separable mesh vectors
 if 0 % Australia
+	ntv=ntv*5/18;
 	tv=linspace(90,140,ntv)*pi/180;
+	npv=npv/6;
 	pv=linspace(285,345,npv)*pi/180;
 else % whole world
 	tv=linspace(0,180,ntv)*pi/180;
@@ -84,8 +89,7 @@ end
 
 %% Perform the ISHT from w to F on separable mesh [theta,phi]=ndgrid(tv,pv)
 % slower [F,theta,phi]=ishtGrid2(w,tv,pv,1);
-doReal=1;
-[F,theta,phi]=ishtRectGrid(w,tv,pv,1,doReal);
+[F,theta,phi]=ishtRectGrid(w,tv,pv,true,true); % useProgreebar and doReal
 
 %% Normalize entries to interval [-1.0,1.0]
 if doScale

@@ -7,14 +7,16 @@ function intR=trapSphereMaskedR(f,tv,pv,R_mask)
 
 %% Default to no mask
 if nargin<4
-	R_mask=0;
+	R_mask=false;
 end
+
+useMask=any(R_mask(:));
 
 %% Apply sphere measure
 fs=bsxfun(@times,f,sin(tv(:)));
 
 %% Apply the mask
-if R_mask~=0
+if useMask
 	fs=fs.*R_mask;
 end
 

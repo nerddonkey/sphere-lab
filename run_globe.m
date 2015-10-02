@@ -8,47 +8,63 @@ function run_Globe
 % going from the spectral domain to the spatial domain.
 
 %%
-L_max=50; % maximum included spherical harmonic degree
+L_max=300; % maximum included spherical harmonic degree
 ntt=max(21,L_max+1); % number of points in theta
 npp=max(41,2*L_max+1); % number of points in phi (here first and last phi are the same)
+bump=0.05;
+doScale=1;
+radius=0.0; % use file value
 
-%% iterate over celestial bodies (files need to be downloaded and in the path)
-for bodyIndex=4:4
+%% Iterate over celestial bodies (files need to be downloaded and in the path)
+for bodyIndex=2:2
 	switch bodyIndex
 		case 1
 			globe='Earth2012.topo_bathy_bed.SHCto2160.shape';
 			name='Earth2012-bed';
 			cmap='parula';
+			radius=6371000;
+			bump=0.035;
 			az=40;  el=-15;
 		case 2
 			globe='Earth2012.topo_bathy.SHCto2160.shape';
 			name='Earth2012';
 			cmap='parula';
+			radius=6371000;
+			bump=0.035;
 			az=40;  el=-15;
 		case 3
 			globe='Earth2012.topo_air.SHCto2160.shape';
 			name='Earth2012_air';
 			cmap='parula';
+			radius=6371000;
+			bump=0.035;
 			az=40;  el=-15;
 		case 4
 			globe='MarsTopo2600.shape';
 			name='Mars';
 			cmap='parula';
+			bump=0.05;
 			az=180;  el=0;
 		case 5
 			globe='VenusTopo719.shape';
 			name='Venus';
-			cmap='hot';
+			cmap='parula';%'hot';
+			bump=0.035;
 			az=180;  el=0;
 		case 6
 			globe='MoonTopo2600p.shape';
 			name='Moon';
 			cmap='parula';
+			bump=0.02;
 			az=180;  el=0;
 	end
 
 	%% Get the data from the shape file
-	[F,theta,phi]=ishtFromShapeFile(L_max,ntt,npp,globe);
+	[F,theta,phi,L_max,rad]=ishtFromShapeFile(L_max,ntt,npp,globe,doScale);
+
+	if radius==0
+		radius=rad;
+	end
 
 	% figure and data output
 	base=userpath;  base(end)='/'; % ~/Documents/MATLAB
@@ -61,13 +77,13 @@ for bodyIndex=4:4
 	% file can be drawn
 	% renderGlobe(F,theta,phi,L_max,name,0.05,1.0,2,cmap,az,el,figs_basename,frames_basename)
 
-	%% render the globe to figure
+	%% Render the globe to figure
 	close all;
-	s=spatialPlot(F,theta,phi,0.05,1.0,2);%0.05
+	s=spatialPlot(F,theta,phi,bump,1.0,2);%0.05
 	colormap(cmap)
 	s.EdgeColor='none'; % no lines
 
-	%% annotate the figure
+	%% Annotate the figure
 	llabel=sprintf('$L_{\\mathrm{max}}=%d$',L_max);
 	delete(findall(gcf,'Tag','myLabel'));
 	a=annotation('textbox',[0.7,0.89,0.28,0.1],'String',llabel);
@@ -81,13 +97,13 @@ for bodyIndex=4:4
 	fig.Position(3)=600;
 	fig.Position(4)=600;
 
-	%% output to png file to current directory
+	%% Output png file to current directory
 	set(gcf,'InvertHardCopy','off');
 	set(gcf,'color',[0.7 0.7 0.7]); % Set the figure frame color to white
 	set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
 	saveas(gcf,figs_basename,'png')
 
-	%% render eigenfunction movie on osx; needs avconv - get via brew install libav
+	%% Render movie on osx; needs avconv - get via 'brew install libav'
 	if ~system('which avconv >/dev/null')
 		view(az,el) % set viewpoint
 		for i=0:358

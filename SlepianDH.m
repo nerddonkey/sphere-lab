@@ -9,22 +9,22 @@ addpath code/ % progressbar
 
 %% Defaults
 if nargin<5
-	useProgressBar=0;
+	useProgressBar=false;
 end
 if nargin < 4
-	R_mask=0; % no mask; trapSphereMaskedR will bypass applying mask
+	R_mask=false; % no mask; trapSphereMaskedR will bypass applying mask
 end
 
 %% Pre-allocate D
 N_tot=(L_max+1)^2;
 D=zeros(N_tot,N_tot);
 
-%% Number of elements to compute for Hermitian
+%% Number of elements to compute for Hermitian (the remaining N_tot*(N_tot-1)/2 can be inferred)
 total=N_tot*(N_tot+1)/2;
 if useProgressBar~=0; count=0; progressbar('SlepianDH overall','inner loop'); end;
 
 %% Populate the Hermitian D using (8.27)
-for r=1:N_tot % rows of D
+ for r=1:N_tot % rows of D
 	if useProgressBar~=0 && count~=0; progressbar([],0); end;
 	l=floor(sqrt(r-1)); m=r-1-l*(l+1); % (7.40) here n=r-1
 	f=sphHarmGrid(l,m,tv,pv);

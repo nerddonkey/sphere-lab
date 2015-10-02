@@ -2,26 +2,29 @@ function run_SlepianD(exampleIndex,testEnergy)
 %run_SlepianD compute and plot Slepian eigenfunctions on the sphere (8.27) and (8.29)
 
 if nargin<1
-	exampleIndex=0; % default is to do Australia
+	exampleIndex=0; % default is to do Australia including Tasmania
 end
 if nargin<2
 	testEnergy=0;
 end
 
+%% Determine path for output frames
 base=userpath;
 base(end)='/'; % ~/Documents/MATLAB/
 frames_folder=[base 'frames/']; % ~/Documents/MATLAB/frames/
 
+%% Parameters for various increments in degrees for different grids
 intginc=0.1; % fine grid for integration (degrees)
 medinc=0.5; % medium grid for smooth plotting (degrees)
 plotinc=2.0; % coarse grid for grid plotting (degrees)
-
 fprintf('\n@@ Fine Grid: %.2f (degrees)\n',intginc)
 fprintf('@@ Medium Grid: %.2f (degrees)\n',medinc)
 fprintf('@@ Coarse Grid: %.2f (degrees)\n',plotinc)
 
+%% Close all figures
 close all
 
+%% Choose a region on the sphere
 switch exampleIndex
 	case 0 % region is Australia including Tasmania
 		[tv_aus,pv_aus,mask_aus,tR,pR]=ausRegion(0,medinc,1);
@@ -31,8 +34,11 @@ switch exampleIndex
 		basename='mainland';
 	case 2 % equatorial band
 		% subregion 1
-		tr(1,:)=[60 100];
-		pr(1,:)=[0,300];
+		%tr(1,:)=[0,90];%[60 100];
+		%pr(1,:)=[0,360];%[0,300]
+		[tv_aus,pv_aus,mask_aus,tR,pR]=ausRegion(0,medinc,1);
+		tr(1,:)=[tv_aus(1) tv_aus(end)]*180/pi;
+		pr(1,:)=[pv_aus(1) pv_aus(end)]*180/pi;
 		basename='band';
 	case 3 % anumber of non-intersecting regular subregions
 		% subregion 1
@@ -48,13 +54,12 @@ switch exampleIndex
 end
 
 %% Populate the N_tot x N_tot Hermitian D matrix (8.27)
-for L_max=4:4
+for L_max=3:3
 	fprintf('\n@@ L_max: %d\n',L_max)
 	N_tot=(L_max+1)^2;
-
 	switch exampleIndex
 		case {0,1} % irregular non-simply-connected (uses mask)
-			D=SlepianDH(L_max,tv_aus,pv_aus,mask_aus);
+			D=SlepianDH(L_max,tv_aus,pv_aus,mask_aus,true);
 		case {2,3}
 			D=zeros(N_tot,N_tot); % allocate and initialize to zero
 			for r=1:size(tr,1) % loop over subregions
@@ -66,16 +71,18 @@ for L_max=4:4
 	end
 	fprintf('@@ Size of D matrix: %dx%d\n', size(D))
 
-	% eigindex'th eigenvector w with eigenvalue lambda in spectral domain
+	%% Get spectral eigenstructure
 	[V,lamD]=eig(D); % eigen-structure
 	% stem(flip(diag(lamD))) % plot the eigenvalues
 
-	for eigindex=0:N_tot-1 % 0:N_tot-1 eigenvalue index 0,1,2 in descending energy order
-		fprintf('\n@@ Eigenindex: %d\n',eigindex)
-		lambda=min(max(lamD(end-eigindex,end-eigindex),0.0),1.0);
+	maxSlepian=1.0;
+
+	for eigindex=0:31%N_tot-1 % eigenvalue index in descending energy order
+		lambda=min(max(lamD(end-eigindex,end-eigindex),0.0),1.0); % pin to [0,1] (superfluous)
+		%lambda=lamD(end-eigindex,end-eigindex);
 		fprintf('@@ Eigenvalue %d: %8.6f\n',eigindex,lambda)
 
-		% spectral Slepian eigenvector
+		%% eigindex'th eigenvector w with eigenvalue lambda in spectral domain
 		w=V(:,end-eigindex); % eigenvector - SHT of Slepian function
 		w=w/norm(w); % normalize eigenvector (actually this is superfluous)
 
@@ -96,12 +103,14 @@ for L_max=4:4
 
 		%% Plot eigenfunction in spatial domain
 		close % prepare fresh figure
-		bump=0.15; ref=1.0; ptype=1;
+		bump=0.3; ref=1.0; ptype=1;
 		tv_plot=(0:medinc:180)*pi/180;
 		pv_plot=(0:medinc:360)*pi/180;
-		[slepian_plot,theta_plot,phi_plot]=ishtRectGrid(w,tv_plot,pv_plot,1);
-		maxSlepian=max(abs(slepian_plot(:))); % for plot normalization
-		fprintf('@@ Max Slepian: %8.6f\n',maxSlepian)
+		[slepian_plot,theta_plot,phi_plot]=ishtRectGrid(w,tv_plot,pv_plot,true);
+		if eigindex==0
+			maxSlepian=max(abs(slepian_plot(:))); % for plot normalization
+			fprintf('@@ Max Slepian: %8.6f\n',maxSlepian)
+		end
 		s=spatialPlot(slepian_plot/maxSlepian,theta_plot,phi_plot, bump,ref,ptype);
 		s.EdgeColor='none'; % no lines
 		s.FaceAlpha=0.8;
@@ -130,7 +139,7 @@ for L_max=4:4
 				for r=1:size(tr,1) % loop over subregions (fine grid)
 					tv_intg=(tr(r,1):intginc:tr(r,2))*pi/180;
 					pv_intg=(pr(r,1):intginc:pr(r,2))*pi/180;
-					reg=ishtRectGrid(w,tv_intg,pv_intg,0);
+					reg=ishtRectGrid(w,tv_intg,pv_intg);
 					lambda_est=lambda_est+trapSphereMaskedR(abs(reg).^2,tv_intg,pv_intg);
 				end
 				fprintf('@@ Region Energy: %8.6f (eigenvalue %8.6f)\n',lambda_est,lambda)
@@ -139,7 +148,7 @@ for L_max=4:4
 				for r=1:size(tr,1) % loop over subregions (coarse grid)
 					ttcr=(tr(r,1):plotinc:tr(r,2))*pi/180;
 					ppcr=(pr(r,1):plotinc:pr(r,2))*pi/180;
-					[r_reg,theta_reg,phi_reg]=ishtRectGrid(w,ttcr,ppcr,0);
+					[r_reg,theta_reg,phi_reg]=ishtRectGrid(w,ttcr,ppcr);
 					s=spatialPlot(1.01*r_reg/maxSlepian,theta_reg,phi_reg);
 					s.EdgeColor='y'; % no lines
 				end

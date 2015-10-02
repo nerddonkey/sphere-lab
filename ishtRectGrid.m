@@ -4,10 +4,10 @@ function [F,theta,phi]=ishtRectGrid(w,tv,pv,useProgressBar,doReal)
 addpath code/
 
 if nargin<4
-	useProgressBar=0;
+	useProgressBar=false;
 end
 if nargin<5
-	doReal=0;
+	doReal=false;
 end
 
 %% Phi needs to be row vector for outer product
@@ -24,7 +24,7 @@ end
 [theta,phi]=ndgrid(tv,pv);
 F=zeros(size(theta));
 
-if useProgressBar~=0; progressbar('ishtRectGrid'); end
+if useProgressBar; progressbar('ishtRectGrid'); end
 
 if 0 % prototype for FFT implementation
 	tic
@@ -43,7 +43,7 @@ if 0 % prototype for FFT implementation
 			Gm=Gm+wlm*Yl0;
 		end
 		F=F+Gm.*exp(1j*m*phi); % use FFT here
-		if useProgressBar~=0; progressbar((m+L_max+1)/(2*L_max+1)); end;
+		if useProgressBar; progressbar((m+L_max+1)/(2*L_max+1)); end;
 	end
 	toc
 	return
@@ -84,6 +84,6 @@ for l=0:L_max
 			F=F+wlm*Ylm+wlm1*(-1)^m*conj(Ylm);
 		end
 	end
-	if useProgressBar~=0; progressbar((l+1)^2/N_tot); end;
+	if useProgressBar; progressbar((l+1)^2/N_tot); end;
 end
 %toc

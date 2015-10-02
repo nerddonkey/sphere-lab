@@ -4,7 +4,7 @@ function [F,theta,phi]=ishtGrid2(w,tv,pv,useProgressBar)
 addpath code/
 
 if nargin<4
-	useProgressBar=0;
+	useProgressBar=false;
 end
 
 % pad w with zeros if its length is not a square
