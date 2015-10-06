@@ -18,7 +18,7 @@ end
 [theta,phi]=ndgrid(tv,pv);
 F=zeros(size(theta));
 
-if useProgressBar~=0; progressbar('ishtGrid2'); end
+if useProgressBar; progressbar('ishtGrid2'); end
 
 %% Perform the inverse spherical harmonic transform
 for l=0:L_max
@@ -35,5 +35,5 @@ for l=0:L_max
 			F=F+wlm1*(-1)^m*conj(Ylm);
 		end
 	end
-	if useProgressBar~=0; progressbar((l+1)^2/N_tot); end;
+	if useProgressBar; progressbar((l+1)^2/N_tot); end;
 end

@@ -5,7 +5,7 @@ function F=isht(w,theta,phi,useProgressBar)
 addpath code/
 
 if nargin<4
-	useProgressBar=0;
+	useProgressBar=false;
 end
 
 %% pad w with zeros if its length is not a square
@@ -18,7 +18,7 @@ end
 S_max=numel(theta);
 F=zeros(size(theta)); % mesh answer to be accumulated
 
-if useProgressBar~=0;  progressbar('isht');  end
+if useProgressBar;  progressbar('isht');  end
 
 for s=1:S_max % walk thru theta,phi matrices as vectors
 	for l=0:L_max
@@ -36,5 +36,5 @@ for s=1:S_max % walk thru theta,phi matrices as vectors
 			end
 		end
 	end
-	if useProgressBar~=0;  progressbar(s/S_max);  end;
+	if useProgressBar;  progressbar(s/S_max);  end;
 end

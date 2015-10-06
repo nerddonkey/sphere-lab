@@ -2,7 +2,7 @@ function [F,theta,phi]=ishtGrid(w,tv,pv,useProgressBar)
 %ishtGrid
 
 if nargin<4
-	useProgressBar=0;
+	useProgressBar=false;
 end
 
 %% pad w with zeros if its length is not a square
@@ -12,7 +12,7 @@ if length(w)<N_tot % pad with zeros to make it a squared length
 	w(N_tot)=0;
 end
 
-if useProgressBar~=0; progressbar('ishtGrid'); end
+if useProgressBar; progressbar('ishtGrid'); end
 
 for l=0:L_max
 	[YB,theta,phi]=sphHarmBankGrid(l,tv,pv);

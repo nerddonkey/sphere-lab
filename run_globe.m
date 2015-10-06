@@ -66,11 +66,13 @@ for bodyIndex=2:2
 		radius=rad;
 	end
 
-	% figure and data output
+	%% Figure and data output directores
 	base=userpath;  base(end)='/'; % ~/Documents/MATLAB
 	figs_folder=[base 'figs/'];
 	frames_basename=sprintf('%s_%04d',[base 'frames/' name],L_max);
 	figs_basename=sprintf('%s_%04d',[figs_folder name],L_max);
+
+	%% Save spatial data
 	save([figs_basename '.mat'],'F','theta','phi');
 
 	% thinking of making the rest a function so the F,theta,phi data in a *.mat
@@ -78,7 +80,7 @@ for bodyIndex=2:2
 	% renderGlobe(F,theta,phi,L_max,name,0.05,1.0,2,cmap,az,el,figs_basename,frames_basename)
 
 	%% Render the globe to figure
-	close all;
+	figure
 	s=spatialPlot(F,theta,phi,bump,1.0,2);%0.05
 	colormap(cmap)
 	s.EdgeColor='none'; % no lines

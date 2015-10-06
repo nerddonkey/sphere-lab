@@ -26,7 +26,7 @@ Inverse Spherical Harmonic Transform
 
 brew reinstall libav
 
-
+http://www.randalolson.com/2014/06/28/how-to-make-beautiful-data-visualizations-in-python-with-matplotlib/
 
 %SPATIAL performs the inverse spherical harmonic transform. The spherical harmonic
 % coefficients are provided in vector w which is organized in the (l,m): (0,0)
@@ -55,3 +55,51 @@ brew reinstall libav
 % are the order m and the columns are the vector of theta; this is
 % for each degree l.  Similarly the complex exponentials are
 % computed on a matrix mesh.  So the computation is pretty quick.
+
+function [tv,pv,R_mask,R_theta,R_phi]=ausRegion(deginc,mainOnly,plotme)
+
+
+austwithtas=[8296:8604 NaN 8623:8645];
+
+[thetaVec,phiVec,maskR,thetaR,phiR]=coastRegion(indexRange,thetaDelta,phiDelta)
+
+
+function [thetaVec,phiVec,maskR,thetaR,phiR]=coastRegion(indexRange,thetaDelta,phiDelta)
+%
+% indexRange: index range in the coastline data set for the region of interest; NaN delineates islands
+if nargin<3
+	plotme=false;
+end
+if nargin<2
+	mainOnly=false; % default include Tasmania
+end
+if nargin<1
+	deginc=1.0; % default stepsize in degrees
+end
+
+%% Grab MATLAB's built-in world coastline data: coast
+load coast % returns column vectors long and lat in degrees
+
+%% Convert to colatitude and longitude in degrees
+thetaR=[(90-lat(indexRange))'];
+phiR=[long(indexRange)'];
+
+%% Find whole-degree enlarged bounding rectangle on region
+min_theta=max(0.0,floor(min(R_theta)));
+max_theta=min(180.0,ceil(max(R_theta)));
+min_phi=floor(min(R_phi));
+max_phi=ceil(max(R_phi));
+
+%% Determine covering mesh with step <= deginc
+numtt=ceil((max_theta-min_theta)/thetaDelta);
+numpp=ceil((max_phi-min_phi)/phiDelta);
+thetaVec=linspace(min_theta,max_theta,numtt)*pi/180;
+phiVec=linspace(min_phi,max_phi,numpp)*pi/180;
+[theta,phi]=ndgrid(tv,pv);
+
+%% Change the coastline data from degrees to radians
+thetaR=thetaR*pi/180;
+phiR=phiR*pi/180;
+
+%% 0-1 mask for whole-degree enlarged bounding rectangle
+R_mask=inpolygon(phi,theta,R_phi,R_theta);

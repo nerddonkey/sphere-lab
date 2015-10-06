@@ -12,7 +12,7 @@ if nargin<6
 	plottype=1;
 end
 if nargin<7
-	doScale=0;
+	doScale=false;
 end
 
 F=spatialMap(G,plottype,doScale);
@@ -57,9 +57,9 @@ c.AxisLocation='in';
 
 switch plottype
 	case {0,1}
-		c.Limits=[0,1];
+		c.Limits=[-0.02,1.02];
 	otherwise
-		c.Limits=[-1,1];
+		c.Limits=[-1.02,1.02];
 end
 
 set(fa,'CameraViewAngle',9) % zoom into scene

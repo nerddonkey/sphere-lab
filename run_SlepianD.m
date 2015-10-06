@@ -5,13 +5,13 @@ if nargin<1
 	exampleIndex=0; % default is to do Australia including Tasmania
 end
 if nargin<2
-	testEnergy=0;
+	testEnergy=false;
 end
 
 %% Determine path for output frames
-base=userpath;
-base(end)='/'; % ~/Documents/MATLAB/
-frames_folder=[base 'frames/']; % ~/Documents/MATLAB/frames/
+base=userpath; base(end)='/'; % ~/Documents/MATLAB/
+frames_folder=[base 'slepian-frames/']; % ~/Documents/MATLAB/slepian-frames/
+data_folder=[base 'slepian-data/']; % ~/Documents/MATLAB/slepian-data/
 
 %% Parameters for various increments in degrees for different grids
 intginc=0.1; % fine grid for integration (degrees)
@@ -27,18 +27,14 @@ close all
 %% Choose a region on the sphere
 switch exampleIndex
 	case 0 % region is Australia including Tasmania
-		[tv_aus,pv_aus,mask_aus,tR,pR]=ausRegion(0,medinc,1);
-		basename='australia';
+		[tv_aus,pv_aus,mask_aus,tR,pR]=ausRegion(medinc,false,true);
+		basename='australia2';
 	case 1 % region is Australia excluding Tasmania
-		[tv_aus,pv_aus,mask_aus,tR,pR]=ausRegion(1,medinc,1);
+		[tv_aus,pv_aus,mask_aus,tR,pR]=ausRegion(medinc,true,true);
 		basename='mainland';
-	case 2 % equatorial band
-		% subregion 1
-		%tr(1,:)=[0,90];%[60 100];
-		%pr(1,:)=[0,360];%[0,300]
-		[tv_aus,pv_aus,mask_aus,tR,pR]=ausRegion(0,medinc,1);
-		tr(1,:)=[tv_aus(1) tv_aus(end)]*180/pi;
-		pr(1,:)=[pv_aus(1) pv_aus(end)]*180/pi;
+	case 2 % an open equatorial band
+		tr(1,:)=[60 100];
+		pr(1,:)=[0 300];
 		basename='band';
 	case 3 % anumber of non-intersecting regular subregions
 		% subregion 1
@@ -51,14 +47,19 @@ switch exampleIndex
 		tr(3,:)=[20 70];
 		pr(3,:)=[0 40];
 		basename='reg3';
+	case 4 % rectangle bounding Australia
+		[tv_aus,pv_aus,mask_aus,tR,pR]=ausRegion(medinc,false,true);
+		tr(1,:)=[tv_aus(1) tv_aus(end)]*180/pi;
+		pr(1,:)=[pv_aus(1) pv_aus(end)]*180/pi;
+		basename='bnd-aust';
 end
 
 %% Populate the N_tot x N_tot Hermitian D matrix (8.27)
-for L_max=3:3
+for L_max=5:5:70
 	fprintf('\n@@ L_max: %d\n',L_max)
 	N_tot=(L_max+1)^2;
 	switch exampleIndex
-		case {0,1} % irregular non-simply-connected (uses mask)
+		case {0,1,4} % irregular non-simply-connected (uses mask)
 			D=SlepianDH(L_max,tv_aus,pv_aus,mask_aus,true);
 		case {2,3}
 			D=zeros(N_tot,N_tot); % allocate and initialize to zero
@@ -70,23 +71,29 @@ for L_max=3:3
 			end
 	end
 	fprintf('@@ Size of D matrix: %dx%d\n', size(D))
-
+	
+	%% Save the D matrix
+	dataName=sprintf('%s_%04d',[data_folder basename],L_max);
+	save([dataName '.mat'],'L_max','D');
+	
 	%% Get spectral eigenstructure
 	[V,lamD]=eig(D); % eigen-structure
 	% stem(flip(diag(lamD))) % plot the eigenvalues
 
 	maxSlepian=1.0;
 
-	for eigindex=0:31%N_tot-1 % eigenvalue index in descending energy order
+	for eigindex=0:99;%N_tot-1 % eigenvalue index in descending energy order
+		if eigindex>N_tot-1
+			break;
+		end
 		lambda=min(max(lamD(end-eigindex,end-eigindex),0.0),1.0); % pin to [0,1] (superfluous)
-		%lambda=lamD(end-eigindex,end-eigindex);
-		fprintf('@@ Eigenvalue %d: %8.6f\n',eigindex,lambda)
+		fprintf('@@ Eigenvalue %04d: %8.6f\n',eigindex,lambda)
 
 		%% eigindex'th eigenvector w with eigenvalue lambda in spectral domain
 		w=V(:,end-eigindex); % eigenvector - SHT of Slepian function
 		w=w/norm(w); % normalize eigenvector (actually this is superfluous)
 
-		if testEnergy~=0 % test spatial energy of slepian function is unity
+		if testEnergy % test spatial energy of slepian function is unity
 			spectralEnergy=norm(w)^2; % will be 1 but just check
 			fprintf('@@ Spectral Energy: %8.6f\n',spectralEnergy)
 
@@ -120,7 +127,7 @@ for L_max=3:3
 		hold on
 
 		switch exampleIndex
-			case {0,1} % fill Australia area on zero/reference surface
+			case {0,1,4} % fill Australia area on zero/reference surface
 				aus_coast=ref*[sin(tR).*cos(pR); sin(tR).*sin(pR); cos(tR)]/ ...
 					(ref+bump);
 				idx = any([~isnan(tR);~isnan(tR)],1);
@@ -129,10 +136,12 @@ for L_max=3:3
 				% draw Australia coastline on Slepian surface
 				rR=interpn(theta_plot,phi_plot,slepian_plot,tR,pR); % very slick
 				F=spatialMap(rR/maxSlepian,ptype);
-				rad=abs(ref + bump*F)/(ref+bump);
+				rad=abs(ref + bump*F)/(ref+bump)*1.02;
 				aus_coast=[rad.*sin(tR).*cos(pR); rad.*sin(tR).*sin(pR); rad.*cos(tR)];
 				plot3(aus_coast(1,:),aus_coast(2,:),aus_coast(3,:),'w','LineWidth',2);
+
 				view(-100,-30) % set viewpoint
+%				view(mode(tR)*180/pi,0) % set viewpoint
 				set(gca,'CameraViewAngle',9) % zoom into scene
 			case {2,3} % Compute energy in sub-regions
 				lambda_est=0;
