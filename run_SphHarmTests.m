@@ -15,7 +15,7 @@ w(n+1)=1;
 
 deginc=2.0;
 tv=(0:deginc:180)*pi/180;
-pv=(0:deginc:360)*pi/180;
+pv=(-30:deginc:330)*pi/180;
 
 pos=50;pinc=150;
 

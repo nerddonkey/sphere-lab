@@ -1,6 +1,6 @@
-function coastReg(minCoast)
+function regionIndexRange(minCoast)
 if nargin<1
-	minCoast=200;
+	minCoast=40;
 end
 load coast
 if ~isnan(lat(end))

@@ -26,7 +26,7 @@ F=zeros(size(theta));
 
 if useProgressBar; progressbar('ishtRectGrid'); end
 
-if 0 % prototype for FFT implementation
+if false % prototype for FFT implementation
 	tic
 	for m=-L_max:L_max
 		Gm=zeros(size(theta));

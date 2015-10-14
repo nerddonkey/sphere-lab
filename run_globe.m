@@ -101,7 +101,7 @@ for bodyIndex=2:2
 
 	%% Output png file to current directory
 	set(gcf,'InvertHardCopy','off');
-	set(gcf,'color',[0.7 0.7 0.7]); % Set the figure frame color to white
+	set(gcf,'color',[1.0 1.0 1.0]); % Set the figure frame color to white
 	set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
 	saveas(gcf,figs_basename,'png')
 
