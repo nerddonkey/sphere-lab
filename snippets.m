@@ -103,3 +103,25 @@ phiR=phiR*pi/180;
 
 %% 0-1 mask for whole-degree enlarged bounding rectangle
 R_mask=inpolygon(phi,theta,R_phi,R_theta);
+
+
+Hi Sandra
+
+probably next week is better.  I’m in the middle of formulating the research
+problem and seem to be making progress.
+
+I think working on a mock paper is a good idea.  You’ll learn research methods.
+
+In the thing I sent the novelty (not great but at least non-zero):
+1) using a general weighting function to generalise the standard Slepian formulation
+2) the Slepian is known to yield dual-orthogonality; when it is generalised through
+weighting then it is preserved; further there is in every case a three-fold orthogonality
+3) the derivation is short using the notion of isomorphism; could be sharpened further
+
+What I want to look at is regularising (somehow) the use of the eigenfunctions in the region
+so higher order ones are not used or penalised.  Then to try an add noise or uncertainty.
+
+Weirdly the stuff is looking like RKHS material so what that means could be interesting,
+possibly the weighted inner product can use the Kernel trick.
+
+Rod

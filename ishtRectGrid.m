@@ -52,8 +52,10 @@ end
 %% Perform the inverse spherical harmonic transform
 %tic
 %expphi=exp(1j*phi); % (*)
+ctv=cos(tv); % do outside loop since independent of l
+
 for l=0:L_max
-	Sl=legendre(l,cos(tv),'sch');
+	Sl=legendre(l,ctv,'sch');
 	Ql=sqrt((2*l+1)/(8*pi)); % Q_l in note.tex/pdf
 
 	% m=0

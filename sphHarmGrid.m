@@ -5,7 +5,7 @@ function [Ylm,theta,phi]=sphHarmGrid(l,m,tv,pv)
 %  Schmidt semi-normalized Associated Legendre functions
 %
 %  integers l, m are the degree and order of the spherical harmonic
-%  vectors tv and pv in radians define the locations of the samplig grid
+%  vectors tv and pv in radians define the locations of the sampling grid
 %
 %  see notes.tex/pdf for spherical harmonic maths; seems robust for l to 2000
 %

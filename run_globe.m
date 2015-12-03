@@ -8,7 +8,7 @@ function run_Globe
 % going from the spectral domain to the spatial domain.
 
 %%
-L_max=300; % maximum included spherical harmonic degree
+L_max=2600; % maximum included spherical harmonic degree
 ntt=max(21,L_max+1); % number of points in theta
 npp=max(41,2*L_max+1); % number of points in phi (here first and last phi are the same)
 bump=0.05;
@@ -16,7 +16,7 @@ doScale=1;
 radius=0.0; % use file value
 
 %% Iterate over celestial bodies (files need to be downloaded and in the path)
-for bodyIndex=2:2
+for bodyIndex=4:4
 	switch bodyIndex
 		case 1
 			globe='Earth2012.topo_bathy_bed.SHCto2160.shape';

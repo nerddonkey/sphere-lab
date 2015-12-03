@@ -1,0 +1,124 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[margin=20mm]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{mathtools}
+\usepackage{xcolor}
+
+\newcommand{\dfn}{\triangleq}
+
+\begin{document}
+
+\section{Spherical Harmonics}
+
+The most popular, call it standard, definition of the spherical harmonics is
+\[
+	Y_{\ell}^{m}(\theta,\varphi)\dfn
+		N_{\ell}^{m}\,
+		P_{\ell}^{m}(\cos\theta)\,
+		e^{i m\varphi}
+\]
+where the normalization is given by
+\[
+	N_{\ell}^{m}\dfn\sqrt{\frac{2\ell+1}{4\pi}\frac{(\ell-m)!}{(\ell+m)!}}
+\]
+
+\section{Numerical considerations}
+
+\subsection{Normalization}
+
+As can be gleaned by looking at the asymptotics of the terms, computing $N_{\ell}^{m}$ and $P_{\ell}^{m}(z)$ \emph{separately} causes numerical problems as $\ell$ becomes large. Empirically, these problems emerge around $\ell=150$.
+
+Direct computation of \emph{normalized or semi-normalized} associated Legendre functions, which essentially computes $N_{\ell}^{m}\,P_{\ell}^{m}(z)$ holistically, is a better numerical strategy.
+
+We use the Schmidt semi-normalized Legendre functions because they are implemented in MATLAB as {\tt\color{blue}legendre(l,m,'sch')}. Empirically, if problems emerge then they are for $\ell>2000$.
+
+\subsubsection{Schmidt semi-normalized associated Legendre functions}
+
+As defined and implemented in MATLAB, the Schmidt semi-normalized (associated) Legendre functions are:
+\color{blue}\begin{verbatim}
+SP(N,M;X) = P(N,X), M = 0
+          = (-1)^M * sqrt(2*(N-M)!/(N+M)!) * P(N,M;X), M > 0
+\end{verbatim}\color{black}
+that is,
+\[
+	S\!P_{\ell}^{m}(z)\dfn
+		\begin{cases}
+			\displaystyle
+			P_{\ell}^{m}(z) &m=0 \\
+			\displaystyle
+			(-1)^{m}\sqrt{\frac{2(\ell-m)!}{(\ell+m)!}}\,
+			P_{\ell}^{m}(z) &m>0\quad (m\leq\ell)
+		\end{cases}
+\]
+(available in MATLAB as {\tt\color{blue}legendre(l,m,'sch')}.
+
+In summary, the normalized associated Legendre functions and not the standard associated Legendre functions should be used when computing the spherical harmonics.
+
+\subsection{Symmetry}
+
+For negative $m$ we note
+\[
+	Y_{\ell}^{-m}(\theta,\varphi)=(-1)^{m}\,\overline{Y_{\ell}^{m}(\theta,\varphi)}
+\]
+so we only need to compute positive orders $m$.  That is, if we have computed $Y_{\ell}^{m}(\theta,\varphi)$ for $m>0$ then we can simply determine $Y_{\ell}^{m}(\theta,\varphi)$ for $m<0$.
+
+In summary, with a few sign flips we can get the negative order spherical harmonics from the positive ones.
+
+\subsection{More robust spherical harmonic computation}
+
+Define
+\[
+	S_{\ell}^{m}(z)\dfn(-1)^{m}\sqrt{\frac{2(\ell-m)!}{(\ell+m)!}}\,
+		P_{\ell}^{m}(z),\quad m\geq0\quad (m\leq\ell)
+\]
+and so we have
+\begin{equation}
+\label{eqn:sps}
+	S_{\ell}^{m}(z)=
+		\begin{cases}
+			\sqrt{2}\,S\!P_{\ell}^{0}(z) &m=0 \\[2mm]
+			S\!P_{\ell}^{m}(z) &m>0
+		\end{cases}
+\end{equation}
+in terms of the Schmidt semi-normalized Legendre functions (available in MATLAB as {\tt\color{blue}legendre(l,m,'sch')}. Further define
+\[
+	Q_{\ell}\dfn\sqrt{\frac{2\ell+1}{8\pi}}
+\]
+Then we have
+\[
+	Y_{\ell}^{m}(\theta,\varphi)=
+		\begin{cases}
+			\displaystyle
+			(-1)^{m}\,Q_{\ell}\,
+			S_{\ell}^{m}(\cos\theta)\,e^{im\varphi} &m\geq0\quad (0\leq m\leq\ell) \\[2mm]
+			\displaystyle
+			(-1)^{m}\,\overline{Y_{\ell}^{\smash{-m}}(\theta,\varphi)} &m<0\quad (-\ell\leq m<0)
+		\end{cases}
+\]
+
+\subsubsection{MATLAB implementation}
+
+The Schmidt semi-normalized Legendre functions are available in MATLAB so we only need to modify the $m=0$ case, \eqref{eqn:sps}.  The following code computes $Y_{\ell}^{m}(\theta,\varphi)$ for $\ell\geq0$ and $m\in\{-\ell,\dotsc,\ell\}$ on a separable grid in $\theta$ and $\phi$:
+\color{blue}
+\begin{verbatim}
+function [Ylm,theta,phi]=sphereHarm(l,m,tt,pp)
+%sphereHarm spherical harmonic of degree l and order m
+   if isvector(tt) && isvector(pp) && abs(m)<=l && l>=0
+      tt=tt(:)'; pp=pp(:)'; % ensure they are row vectors
+      [theta,phi]=ndgrid(tt,pp);
+      Sl=legendre(l,cos(tt),'sch');
+      Sl(1,:)=Sl(1,:)*sqrt(2); % m=0 adjustment
+      Ql=sqrt((2*l+1)/(8*pi));
+      Slm=Sl(abs(m)+1,:)'; % pull out S_l^|m|
+      Ylm=(-1)^m*Ql*kron(ones(size(pp)),Slm).*exp(1j*abs(m)*phi);
+      if m<0
+         Ylm=(-1)^m*conj(Ylm);
+      end
+   else
+      error('** invalid inputs or out-of-range')
+   end
+end\end{verbatim}
+\color{black}
+
+\end{document}

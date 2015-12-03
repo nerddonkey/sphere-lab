@@ -24,6 +24,7 @@
 \usepackage{lipsum}
 \usepackage{graphicx}
 \usepackage{breqn}
+\usepackage{subcaption}
 
 \graphicspath{{figs/}{pdf/}{jpg/}{../pdf/}}
 
@@ -36,9 +37,10 @@
 \DeclarePairedDelimiterX\set[1]{\lbrace}{\rbrace}{#1}
 \DeclarePairedDelimiterX\innerp[2]{\langle}{\rangle}{#1,#2}
 \DeclarePairedDelimiterX\norm[1]{\lVert}{\rVert}{#1}
-\DeclarePairedDelimiterX\brak[1]{\lbrace}{\rbrace}{#1}
+\DeclarePairedDelimiterX\brac[1]{[}{]}{#1}
+\DeclarePairedDelimiterX\coeff[1]{(}{)}{#1}
 \DeclareMathOperator{\expectop}{\mathbb{E}} % \expect[\Big]{ f }
-\newcommand{\expect}[2][]{\expectop\brak[#1]{#2}}
+\newcommand{\expect}[2][]{\expectop\set[#1]{#2}}
 
 \newcommand{\figref}[1]{Fig.\,\ref{#1}}
 \newcommand{\tabref}[1]{Table~\ref{#1}}
@@ -62,19 +64,19 @@
 				funding scheme (Project No.~DP1094350).}
 		\IEEEauthorblockA{Research School of Engineering,\\
 			College of Engineering and Computer Science,\\
-			The Australian National University,\\ Canberra, ACT 0200, Australia\\
+			The Australian National University,\\ Canberra, ACT 2601, Australia\\
 			Email: rodney.kennedy@anu.edu.au} \and
-		\IEEEauthorblockN{Collaborator}
+		\IEEEauthorblockN{Aiden W.~Kennedy}
 		\IEEEauthorblockA{Research School of Engineering,\\
 			College of Engineering and Computer Science,\\
-			The Australian National University,\\ Canberra, ACT 0200, Australia\\
+			The Australian National University,\\ Canberra, ACT 2601, Australia\\
 			Email: collaborator@anu.edu.au}}
 \else
 	\author{Rodney~A.~Kennedy,~\IEEEmembership{Fellow,~IEEE}, and
 		Collaborator,~\IEEEmembership{Senior Member,~IEEE}
 		\thanks{Rodney~A.~Kennedy and Collaborator are with the Research School of Engineering,
 			College of Engineering and Computer Science,
-			The Australian National University (ANU), Canberra, ACT 0200, Australia
+			The Australian National University (ANU), Canberra, ACT 2601, Australia
 			(email: $\{$rodney.kennedy, collaborator$\}$@anu.edu.au).}
 		\thanks{This work was supported under the Australian Research Council's Discovery Projects
 			funding scheme (Project No.~DP1094350).}}
@@ -99,31 +101,22 @@ key, word, keyword list
 
 \subsection{Background}
 
-\lipsum[4-6]  The most profound work is found in\cite{Kennedy-book:2013}.
-
-%\begin{figure}
-%\centering
-%	\includegraphics[width=0.59\columnwidth]{pdfs/xxx1.png}\\
-%	\caption{Description}\label{fig:nice-fig}
-%\end{figure}
+\lipsum[4]
 
 \subsection{Contributions}
 
-$\expect{f}$ and $\expect[\big]{f}$
-
 \begin{itemize}
 \item
-\lipsum[17]
+We use a weighting function, $h(\unit{x})$ to generalise the standard Slepian formulation, section \ref{sec:wsdcp}.
 \item
-\lipsum[18]
+The Slepian probem is known to yield dual-orthogonality; when it is generalised through the weighting function then this property has a generalization and further there is a three-fold orthogonality, section \ref{sec:tfsdoe}.  Further, the derivation for orthogonality is succinct and general using the notion of isomorphism.
 \item
-\lipsum[19]
+Regularization for the case of measurement error or noise yields robustness to noise enhancement that would occur for eigenfunctions with small eigenvalues, section \ref{sec:emwuim}.
 \end{itemize}
 
+\subsection{Paper Organization}
 
-%\lipsum[33-36]
-
-\newpage
+\lipsum[13]
 
 \section{Problem Formulation}
 
@@ -141,10 +134,10 @@ The spherical harmonic transform (SHT) is given by
 \]
 for degree $\ell\in\set{0,1,\dots}$ and order $m$ where $\abs{m}\leq \ell$.
 
-The subspace of band-limited functions on the sphere of maximum degree $L$ is denoted $\mathcal{H}_{L}\in L^2(\untsph)$ and is $N\dfn(L+1)^2$-dimensional.  If a signal $f(\unit{x})$ is band-limited to $L$ then $\innerp{f}{Y_{\ell}^{m}}=0$ for $\ell>L$ and it has the spectral (spherical harmonic) representation given by the vector
+The subspace of band-limited functions on the sphere of maximum degree $L$ is denoted $\mathcal{H}_{L}\in L^2(\untsph)$ and is $N$-dimensional where \[N\dfn(L+1)^2\]  If a signal $f(\unit{x})$ is band-limited to $L$ then $\innerp{f}{Y_{\ell}^{m}}=0$ for $\ell>L$ and it has the spectral (spherical harmonic) representation given by the vector
 \begin{equation}
 \label{eqn:f-spec}
-	\mathbf{f}=\parn[\Big]{(f)_0^0, (f)_1^{-1}, (f)_1^{0}, (f)_1^{1},\dotsc, (f)_L^{L}}
+	\mathbf{f}=\brac[\Big]{(f)_0^0, (f)_1^{-1}, (f)_1^{0}, (f)_1^{1},\dotsc, (f)_L^{L}}
 	\in\cmplx^{N}.
 \end{equation}
 This vector can be indexed with $n=0,1,2,\dotsc,N-1$, where $n=\ell(\ell+1)+m$.  Generally when we say $f$ is band-limited then the maximum degree $L$ is understand.
@@ -152,14 +145,20 @@ This vector can be indexed with $n=0,1,2,\dotsc,N-1$, where $n=\ell(\ell+1)+m$. 
 The spatial and spectral representations are related through isomorphism\cite{Kennedy-book:2013}
 \begin{equation}
 \label{eqn:isom}
-	\innerp{f}{g}=\innerp{\mathbf{f}}{\mathbf{g}}_{\cmplx^N},
+	\innerp{f}{g}=\innerp{\mathbf{f}}{\mathbf{g}}_{\cmplx^N},\quad\forall f,g
 \end{equation}
-where the spectral inner product is $\innerp{\mathbf{f}}{\mathbf{g}}=\mathbf{g}^H\mathbf{f}$.
+where the spectral-domain inner product is $\innerp{\mathbf{f}}{\mathbf{g}}_{\cmplx^N}=\mathbf{g}^H\mathbf{f}$.
 This isomorphism greatly simplifies our demonstrations of different types of orthogonality.
 
-\subsection{Weighted spatial concentration problem}
+\subsection{Weighted spatial-domain concentration problem}
+\label{sec:wsdcp}
 
-Let $h(\unit{x})$ be a real, non-negative weighting function bounded by unity on the unit sphere $\untsph$.  Then we seek the band-limited signal $f(\unit{x})\in\mathcal{H}_{L}$ that maximizes the following weighted spatial concentration
+Let $h(\unit{x})$ be a real, non-negative weighting function bounded by unity on the unit sphere $\untsph$:
+\begin{equation}
+\label{eqn:h-weight}
+	0\leq{}h(\unit{x})\leq{}1,\quad\forall\unit{x}\in\untsph.
+\end{equation}
+Then we seek the band-limited signal $f(\unit{x})\in\mathcal{H}_{L}$ that maximizes the following weighted spatial-domain concentration
 \begin{equation}
 \label{eqn:conc-spat}
 	\lambda_0
@@ -167,16 +166,22 @@ Let $h(\unit{x})$ be a real, non-negative weighting function bounded by unity on
 		\set[\Bigg]{\frac{\int_{\untsph} h(\unit{x})\,\abs[\big]{f(\unit{x})}^2\,ds(\unit{x})}%
 		{\int_{\untsph} \abs[\big]{f(\unit{x})}^2\,ds(\unit{x})}}.
 \end{equation}
-The denominator in \eqref{eqn:conc-spat} can be written $\norm{f}^2$ and is usually taken to be unity.
+%The denominator in \eqref{eqn:conc-spat} can be written $\norm{f}^2$ and is usually taken to be unity.
+
+\subsubsection{Concentration interpretation}
+
+By specifying the signal to be band-limited then we are limiting the spread of energy in the spectral domain.  By judicious choose of the weighting function, $h(\unit{x})$ in \eqref{eqn:conc-spat}, we attempt to limit the spatial-domain distribution of energy to some localized portion of the sphere.  The uncertainty principle says we cannot simultaneously concentrate energy in the spatial and spectral domains.  A concentration problem is when we attempt to concentrate as much as possible in both domains.
+
+\subsection{Spectral-domain reformulation of concentration problem}
 
 The weighted concentration problem \eqref{eqn:conc-spat} can be written in the spectral domain as the Rayleigh quotient
 \begin{equation}
 \label{eqn:conc-spec}
 	\lambda_0
-		=\max_{\mathbf{f}\in\cmplx^{H}}\frac{\mathbf{f}^H\mathbf{H}\mathbf{f}}%
-		{\mathbf{f}^H\mathbf{f}},
+	=\max_{\mathbf{f}\in\cmplx^{H}}\frac{\mathbf{f}^H\mathbf{H}\mathbf{f}}%
+	{\mathbf{f}^H\mathbf{f}},
 \end{equation}
-where the spectral Hermitian matrix $\mathbf{H}$ has elements
+where the spectral-domain Hermitian matrix $\mathbf{H}$ has elements
 \begin{equation}
 \label{eqn:W-matrix}
 	H_{\ell,p}^{m,q} \dfn \int_{\untsph} h(\unit{x})\,Y_{p}^{q}(\unit{x})\,
@@ -184,55 +189,38 @@ where the spectral Hermitian matrix $\mathbf{H}$ has elements
 \end{equation}
 and $\mathbf{f}$ is the spectral representation of $f(\unit{x})$.  Note that the rows and columns of matrix $\mathbf{H}$ are indexed consistent with $\mathbf{f}$ in \eqref{eqn:f-spec}.
 
-Problem \eqref{eqn:conc-spec} is solved by finding the eigenvector corresponding to the largest eigenvalue of $\mathbf{H}$.  All eigenvalues of $\mathbf{H}$ are real and non-negative, $\lambda_0\geq\lambda_1\geq\lambda_2\geq\dotsb\geq0$, and the corresponding eigenvectors, $\mathbf{v}_0,\mathbf{v}_1, \mathbf{v}_2, \dotsc,$ can be chosen as orthonormal.  If the components of the dominant spectral eigenvector, $\mathbf{v}_0$, are $(v^{}_0)_{\ell}^{m}$ then the spatial eigen-function is
-\begin{align}
+The Rayleigh quotient \eqref{eqn:conc-spec} is solved by finding the eigenvector, $\mathbf{v}_0$, corresponding to the largest eigenvalue, $\lambda_0$, of $\mathbf{H}$.  All eigenvalues of $\mathbf{H}$ are real and non-negative, $\lambda_0\geq\lambda_1\geq\lambda_2\geq\dotsb\geq0$, and the corresponding eigenvectors, $\mathbf{v}_0,\mathbf{v}_1, \mathbf{v}_2, \dotsc,$ can be chosen as orthonormal, that is,
+\[
+	\mathbf{H}\mathbf{v}_n=\lambda_n\mathbf{v}_n,\quad\text{with}\quad\innerp{\mathbf{v}_n}{\mathbf{v}_m}_{\cmplx^N}=\delta_{m,n}.
+\]
+If the components of the dominant spectral-domain eigenvector, $\mathbf{v}_0$, are $(v^{}_0)_{\ell}^{m}$ then the spatial-domain eigenfunction is
+\begin{equation}
 \label{eqn:spat-eigen}
+\begin{split}
 	v^{}_{0}(\unit{x})
 	&=\smash{\sum_{\ell,m}} (v^{}_0)_{\ell}^{m}\, Y_{\ell}^{m}(\unit{x}) \\
 	&=\arg\max_{f\in\mathcal{H}_{L}}
 		\set[\Bigg]{\frac{\int_{\untsph} h(\unit{x})\,\abs[\big]{f(\unit{x})}^2\,ds(\unit{x})}%
-		{\int_{\untsph} \abs[\big]{f(\unit{x})}^2\,ds(\unit{x})}}. \nonumber
-\end{align}
-In summary, to find the optimal spatial function that attains \eqref{eqn:conc-spat}, being $v_{0}(\unit{x})$ in \eqref{eqn:spat-eigen}, we compute the spectral Hermitian matrix, using \eqref{eqn:W-matrix}; then determine the dominant spectral eigenvector $\mathbf{v}_0$; and synthesize $v_{0}(\unit{x})$ using the inverse SHT in \eqref{eqn:spat-eigen}.
+		{\int_{\untsph} \abs[\big]{f(\unit{x})}^2\,ds(\unit{x})}}.
+\end{split}
+\end{equation}
+and this is the optimal spatial function that attains \eqref{eqn:conc-spat}.
 
-%\subsection{Slepian spatial concentration}
-%
-%Defining a region $R\in\untsph$, then selecting the real, non-negative weighting function, $h(\unit{x})$, as
-%\begin{equation}
-%\label{eqn:indicator}
-%	\chi^{}_{R}(\unit{x}) \dfn
-%	\begin{cases}
-%		1 & \unit{x}\in R \\
-%		0 & \text{otherwise}
-%	\end{cases},
-%\end{equation}
-%then we recover the standard Slepian concentration problem on the sphere
-%\begin{equation}
-%\label{eqn:conc-spat-slep}
-%	\lambda_0
-%		=\max_{f\in\mathcal{H}_{L}}\frac{\int_{R} \abs[\big]{f(\unit{x})}^2\,ds(\unit{x})}%
-%		{\int_{\untsph} \abs[\big]{f(\unit{x})}^2\,ds(\unit{x})},
-%\end{equation}
-%whose spectral Hermitian matrix $\mathbf{H}$ has elements
-%\begin{equation}
-%\label{eqn:W-matrix-slep}
-%	H_{\ell,p}^{m,q} \dfn \int_{R} Y_{p}^{q}(\unit{x})\,
-%		\conj{Y_{\ell}^{m}(\unit{x})}\,ds(\unit{x}).
-%\end{equation}
-%Then $\mathbf{H}\mathbf{v}_0=\lambda_0\mathbf{v}_0$, and $\mathbf{v}_0$ is the spectral representation of the most concentrated signal, as synthesized in \eqref{eqn:spat-eigen}.
-%
-%For illustration, let the region $R\in\untsph$ be the Australian continent including Tasmania, and let band-limit $L=20$.  The resulting spectral Hermitian matrix $\mathbf{H}$ is $441\times441$. The two dominant eigen-functions $v^{}_{0}(\unit{x})$ and $v^{}_{1}(\unit{x})$ are shown in Fig.\,\ref{fig:region}.
+%In summary, to find the optimal spatial function that attains \eqref{eqn:conc-spat}, we compute the entries of the spectral-domain Hermitian matrix, using \eqref{eqn:W-matrix}; then determine the dominant spectral-domain eigenvector $\mathbf{v}_0$; and synthesize $v_{0}(\unit{x})$ using the inverse-SHT in \eqref{eqn:spat-eigen}.
 
-\subsection{Three-fold spatial orthogonality of eigen-functions}
 
-Firstly, with the $N$ eigenvectors $\mathbf{v}_n$, $n=0,1,2,\dotsc,N-1$, of $\mathbf{H}$ are orthonormal in $\cmplx^N$.  Then by isomorphism, \eqref{eqn:isom}, we have \emph{orthonormality} of the $N$ eigen-functions $v_n(\unit{x})$ in $\mathcal{H}_{L}$.  That is, from \eqref{eqn:isom},
+\subsection{Three-fold spatial-domain orthogonality of eigenfunctions}
+\label{sec:tfsdoe}
+
+Firstly, the $N$ eigenvectors $\mathbf{v}_n$, $n=0,1,2,\dotsc,N-1$, of $\mathbf{H}$ are orthonormal in $\cmplx^N$.  Then by isomorphism, \eqref{eqn:isom}, we have \emph{orthonormality} of the $N$ eigenfunctions $v_n(\unit{x})$ in $\mathcal{H}_{L}$:
 \[
-	\innerp{v_n(\unit{x})}{v_m(\unit{x})}
+%	\innerp{v_n(\unit{x})}{v_m(\unit{x})}
+	\innerp{v_n}{v_m}
 	=\innerp{\mathbf{v}_n}{\mathbf{v}_m}_{\cmplx^N}
 	=\delta_{m,n}.
 \]
 
-Secondly, spectrally (because we have eigenvectors) then
+Secondly, since we have eigenvectors then
 \begin{align*}
 	\innerp{\mathbf{H}\mathbf{v}_n}{\mathbf{v}_m}_{\cmplx^N}
 	=\mathbf{v}_m^H\mathbf{H}\mathbf{v}_n
@@ -245,46 +233,47 @@ So, by isomorphism, spatially this is the same as
 	\int_{\untsph} h(\unit{x})\,v_n(\unit{x})\,
 		\conj{v_m(\unit{x})}\,ds(\unit{x})=\lambda_n\,\delta_{n,m}.
 \]
-This is spatial \emph{orthogonality} of the $v_n(\unit{x})$ with respect to a weighted spatial inner product on the sphere
+This is a spatial-domain \emph{orthogonality} of the $v_n(\unit{x})$ with respect to a weighted spatial-domain inner product %on the sphere
 \[
 	\innerp{f}{g}_{h}\dfn\int_{\untsph} h(\unit{x})\,f(\unit{x})\,
 		\conj{g(\unit{x})}\,ds(\unit{x}).
 \]
-Under this weighted inner product $\norm{v_n(\unit{x})}^2_{h}=\lambda_n$, which is less than unity in general.  However, it is clear that, whenever $\lambda_n>0$,
-\[
-	\set[\Big]{\frac{1}{\sqrt{\lambda_n}}v_n(\unit{x})}
-\]
+Under this weighted inner product $\norm{v_n}^2_{h}=\lambda_n<1$.  However, it is clear that, whenever $\lambda_n>0$,
+\(
+	\set[\big]{{v_n(\unit{x})}/{\sqrt{\lambda_n}}}
+\)
 are \emph{orthonormal} in the weighted inner product space.
 
 Finally, there is a third sense in which the $v_n(\unit{x})$ are orthogonal.  Implicitly define a third inner product through
 \[
 	\innerp{f}{g}=\innerp{f}{g}_{h}+\innerp{f}{g}_{1-h}.
 \]
-Then given $0\leq h(\unit{x})\leq1$ we have $0\leq1-h(\unit{x})\leq1$ and $v_n(\unit{x})$ are also \emph{orthogonal} in the complementary weighted inner product space
+Then, given \eqref{eqn:h-weight}, we have $0\leq1-h(\unit{x})\leq1$ and $v_n(\unit{x})$ are \emph{orthogonal} with the complementary weighted inner product
 \[
-	\innerp{f}{g}_{1-h}\dfn\int_{\untsph} \parn[\Big]{1-h(\unit{x})}\,f(\unit{x})\,
+	\innerp{f}{g}_{1-h}\dfn\int_{\untsph} \parn[\big]{1-h(\unit{x})}\,f(\unit{x})\,
 		\conj{g(\unit{x})}\,ds(\unit{x}),
 \]
-and can be normalized in an expected way ($\lambda_n<1$)
-\[
-	\set[\Big]{\frac{1}{\sqrt{1-\lambda_n}}v_n(\unit{x})}.
-\]
+and can be normalized as in
+\(
+	\set[\big]{v_n(\unit{x})/{\sqrt{1-\lambda_n}}}
+\)
+ ($\lambda_n<1$).
 Further, in this case, the Hermitian matrix is $\mathbf{H}^{c}\dfn\mathbf{I}-\mathbf{H}$.
 
-In summary, the eigenfunctions satisfy the three-fold \emph{spatial orthogonality} (with spectral counterparts):
+In summary, the eigenfunctions satisfy the three-fold \emph{spatial-domain orthogonality} (with spectral counterparts):
 \begin{align*}
-	\innerp{v_n(\unit{x})}{v_m(\unit{x})}&=\delta_{m,n}
+	\innerp{v_n}{v_m}&=\delta_{m,n}
 		&&(= \innerp{\mathbf{v}_n}{\mathbf{v}_m}_{\cmplx^N})\\
-	\innerp{v_n(\unit{x})}{v_m(\unit{x})}_h&=\lambda_n\,\delta_{m,n}
+	\innerp{v_n}{v_m}_h&=\lambda_n\,\delta_{m,n}
 		&&(=\innerp{\mathbf{H}\mathbf{v}_n}{\mathbf{v}_m}_{\cmplx^N})\\
-	\innerp{v_n(\unit{x})}{v_m(\unit{x})}_{1-h}&=(1-\lambda_n)\,\delta_{m,n}
+	\innerp{v_n}{v_m}_{1-h}&=(1-\lambda_n)\,\delta_{m,n}
 		&&(=\innerp{\mathbf{H}^{c}\mathbf{v}_n}{\mathbf{v}_m}_{\cmplx^N})
 \end{align*}
-which implies the energy concentrations are $\norm{v_n(\unit{x})}^2=1$, $\norm{v_n(\unit{x})}_h^2=\lambda_n$, and $\norm{v_n(\unit{x})}_{1-h}^2=1-\lambda_n$.
+which implies the energy concentrations are $\norm{v_n}^2=1$, $\norm{v_n}_h^2=\lambda_n$, and $\norm{v_n}_{1-h}^2=1-\lambda_n$.
 
-\subsection{Slepian spatial concentration}
+\subsection{Slepian spatial-domain concentration}
 
-Defining a region $R\in\untsph$, then selecting the real, non-negative weighting function, $h(\unit{x})$, as
+Defining a region $R\in\untsph$, then selecting the real, non-negative weighting function, as $h(\unit{x})=\chi^{}_{R}(\unit{x})$, where
 \begin{equation}
 \label{eqn:indicator}
 	\chi^{}_{R}(\unit{x}) \dfn
@@ -293,42 +282,268 @@ Defining a region $R\in\untsph$, then selecting the real, non-negative weighting
 		0 & \text{otherwise}
 	\end{cases},
 \end{equation}
-then we recover the standard Slepian concentration problem on the sphere\cite{Kennedy-book:2013}
+in \eqref{eqn:conc-spat}, and
+\(
+	\innerp{f}{g}^{}_{R} 
+		=\int_{R} f(\unit{x})\,\conj{g(\unit{x})}\,ds(\unit{x}),
+\)
+is the inner product, we recover the Slepian concentration problem on the sphere%\cite{Kennedy-book:2013}
 \begin{equation}
 \label{eqn:conc-spat-slep}
 	\lambda_0
 		=\max_{f\in\mathcal{H}_{L}}\frac{\int_{R} \abs[\big]{f(\unit{x})}^2\,ds(\unit{x})}%
 		{\int_{\untsph} \abs[\big]{f(\unit{x})}^2\,ds(\unit{x})},
 \end{equation}
-whose spectral Hermitian matrix $\mathbf{H}$ has elements
+whose spectral-domain Hermitian matrix $\mathbf{H}$ has elements
 \begin{equation}
 \label{eqn:W-matrix-slep}
 	H_{\ell,p}^{m,q} \dfn \int_{R} Y_{p}^{q}(\unit{x})\,
 		\conj{Y_{\ell}^{m}(\unit{x})}\,ds(\unit{x}).
 \end{equation}
-Then $\mathbf{H}\mathbf{v}_0=\lambda_0\mathbf{v}_0$, and $\mathbf{v}_0$ is the spectral representation of the most concentrated signal, as synthesized in \eqref{eqn:spat-eigen}.
+%Then $\mathbf{H}\mathbf{v}_0=\lambda_0\mathbf{v}_0$, and $\mathbf{v}_0$ is the spectral representation of the most concentrated signal, as synthesized in \eqref{eqn:spat-eigen}.  
+We have the three-fold spatial-domain orthogonality of Slepian eigenfunctions: on the whole sphere, within region $R$ and within region $\untsph\setminus{}R$.
 
-We have the three-fold spatial orthogonality of Slepian eigen-functions.  They are orthonormal on the whole sphere, orthogonal within region $R$ and orthogonal within region $\untsph\setminus{}R$.
-Within the regions (subregions of the sphere) the effective inner product weighting is unity, that is,
-\begin{align*}
-	\innerp{f}{g}_{h} 
-		&=\int_{R} f(\unit{x})\,\conj{g(\unit{x})}\,ds(\unit{x}), \\
-		\shortintertext{and}
-	\innerp{f}{g}_{1-h} 
-		&=\int_{\untsph\setminus{}R} f(\unit{x})\,\conj{g(\unit{x})}\,ds(\unit{x}).
-\end{align*}
-
-For illustration, on the Earth, normalized with unit radius, let the region $R\in\untsph$ be the Australian continent including Tasmania, and let band-limit $L=20$.  The resulting spectral Hermitian matrix $\mathbf{H}$ is $441\times441$. The two dominant eigen-functions $v^{}_{0}(\unit{x})$ and $v^{}_{1}(\unit{x})$ are shown in Fig.\,\ref{fig:region}.
-
-\begin{figure}[htb]
+\begin{figure}[tb]
 \centering
-	\includegraphics[width=0.65\columnwidth]{pdfs/australia_0020_0001.png}\\[-5mm]
-	\includegraphics[width=0.65\columnwidth]{pdfs/australia_0020_0002.png}
-	\caption{The two dominant eigen-functions $v^{}_{0}(\unit{x})$ and $v^{}_{1}(\unit{x})$ for Australia including Tasmania for band-limit $L=20$.}\label{fig:region}
+	\begin{subfigure}[t]{0.48\columnwidth}
+	\centering
+	\includegraphics[width=0.98\columnwidth]{pdfs/australia_0032_0001.png}
+	\caption{$v^{}_{0}(\unit{x})$ where $\lambda_{0}=0.998737$}
+	\end{subfigure} \hfill
+	\begin{subfigure}[t]{0.48\columnwidth}
+	\centering
+	\includegraphics[width=0.98\columnwidth]{pdfs/australia_0032_0002.png}
+	\caption{$v^{}_{1}(\unit{x})$ where $\lambda_{1}=0.998025$}
+	\end{subfigure}
+	\caption{Magnitudes of the two dominant eigenfunctions for Australia including Tasmania region for band-limit $L=32$.}\label{fig:region}
 \end{figure}
 
+For illustration, on the Earth, normalized with unit radius, let the region $R\in\untsph$ be the Australian continent including Tasmania, and let band-limit $L=32$.  Therefore $N=1089$ and the resulting spectral-domain Hermitian matrix is $\mathbf{H}$ is $1089\times1089$. The two dominant eigenfunctions $v^{}_{0}(\unit{x})$ and $v^{}_{1}(\unit{x})$ are shown in Fig.\,\ref{fig:region}.
 
-\quad
+
+\section{Towards robust modelling in a region}
+
+\subsection{Expansion modelling without noise}
+
+Using the orthonormal sequence $\set{v_n(\unit{x})}$ in $\mathcal{H}_L$, any band-limited function $f(\unit{x})$ has expansion, valid for $\unit{x}\in\untsph$,
+\begin{align}
+\label{eqn:g-sexpansion}
+	f(\unit{x})
+	=\sum_{n=0}^{N-1} \coeff{f}_n v_n(\unit{x})
+	&=\sum_{n=0}^{N-1} \underbrace{\sqrt{\lambda_n}\,\coeff{f}_n}_{\displaystyle\dfn\coeff{f}_{h;n}}
+	\frac{v_n(\unit{x})}{\sqrt{\lambda_n}}, %\\
+%	&=\sum_{n=0}^{N-1} \coeff{f}_{h;n} \frac{v_n(\unit{x})}{\sqrt{\lambda_n}},
+\end{align}
+where 
+\begin{align*}
+	\coeff{f}_n
+	&\dfn\innerp[\big]{f}{v_n}
+	=\int_{\untsph} f(\unit{y})\,\conj{v_n(\unit{y})}\,ds(\unit{y}),\\
+	\shortintertext{and}
+	\coeff{f}_{h;n}
+	&\dfn\innerp[\Big]{f}{\frac{v_n}{\sqrt{\lambda_n}}}_{\!h}
+	=\int_{\untsph}h(\unit{y})\,f(\unit{y})\frac{\conj{v_n(\unit{y})}}{\sqrt{\lambda_n}}\,ds(\unit{y}).
+\end{align*}
+%and $\coeff{f}_{h;n}=\sqrt{\lambda_n}\,\coeff{f}_n$.
+
+Therefore, if band-limited $f(\unit{x})$ is determined from local information implicit in weighting $h(\unit{y})$ we can determine the coefficients of interest using
+\begin{equation}
+\label{eqn:coeff-h}
+	\coeff{f}_n
+	=\frac{1}{\lambda_n}\innerp[\big]{f}{v_n}_h
+	=\frac{1}{\lambda_n}\int_{\untsph}h(\unit{y})\,f(\unit{y})\,\conj{v_n(\unit{y})}\,ds(\unit{y}).
+\end{equation}
+For example with $h(\unit{x})=\chi^{}_{R}(\unit{x})$ then the local information is just the information within region $R$.
+
+\subsection{Expansion modelling with uncertainty in measurement}
+\label{sec:emwuim}
+
+The energy associated with the $n$th eigenfunction with respect to the weighted localized inner product is $\abs{\coeff{g}_{h;n}}{}^2$.  However, this implies the energy on the sphere is $\abs{\coeff{g}_{h;n}}{}^2/\lambda_n$.  Therefore, we may see a significant growth in the energy on the sphere or significant noise enhancement whenever $\lambda_n$ is small.  We can follow the approach taken in \cite{KennedyC2014c} to ameliorate such noise enhancement that can occur in \eqref{eqn:coeff-h}.  %Whilst \cite{KennedyC2014c} was motivated by extrapolation it is still necessary to factor in the effect of noise in the local region, so we need reformulate how we compute $\coeff{g}_{h;n}$.
+
+Suppose $f$ is band-limited, $f\in\mathcal{H}_L$, but can only be observed in some localized portion of the sphere through a weighting function $h$ and is also subject to noise
+\[
+	g(\unit{x})=h(\unit{x})\,f(\unit{x})+z(\unit{x}),
+\]
+
+The regularization objective is
+\[
+	\min_{\tilde{f}\in\mathcal{H}_L} \norm{\tilde{f}}^2\quad\text{subject to}\quad \norm{\tilde{f}-g}_h^2\leq\epsilon^2
+\]
+
+\newpage
+Write
+\[
+	\tilde{f}(\unit{x})=\sum_{n=0}^{N-1} a_nv_n(\unit{x})\quad\text{and}\quad
+	g(\unit{x})=\sum_{n=0}^{N-1} b_nv_n(\unit{x})
+\]
+Then
+\[
+	\norm{\tilde{f}}^2=\sum_{n=0}^{N-1} \abs{a_n}^2
+\]
+and
+\[
+	\norm{\tilde{f}-g}_h^2=\sum_{n=0}^{N-1} \lambda_n\abs{a_n-b_n}^2
+\]
+
+\section{Ideas}
+
+\begin{itemize}
+\item \textbf{Random matrix theory:}
+The square root of the Hermitian is the weighted local projection.  Then we can use random matrix theory to characterize the eigenvalues.
+
+\item \textbf{Operator Reformulation:}
+Integral equation and kernel version of theory.
+
+\item \textbf{Regularized Hermitian:}
+Can the Hermitian be regularized directly to deliver more sensible eigenvectors? (The original idea)
+
+\item \textbf{Spatial-limited problem:}
+Do the converse Slepian problem.
+
+\item \textbf{Uncertain $L$:}
+Need spectral weighting to deal with uncertain $L$; simultaneous with spatial weighting?  Make robust to imprecise band-limited value of $L$.
+
+\item \textbf{Franks framework reformulation:}
+Cast everything in Franks framework.
+
+\item \textbf{Errors-in-variables:}
+Uncertainty in spatial measurement (domain) and values (range).
+
+\item \textbf{RKHS:}
+Real positive definite weighting is 75\% there. For weighted inner product is it amenable to kernel trick?
+
+\item \textbf{Beampattern Deconvolution:}
+Weighting is a single shot convolution.  Does this show how to deconvolve imperfect measurement beamshapes?
+
+\item \textbf{Sampled space:}
+Pseudo-DH samples and working with information preserving spatial samples.
+\end{itemize}
+
+\section{Conclusions}
+
+\lipsum[28]
+
+\bibliography{IEEEabrv,wSlepian}
+
+\appendices
+
+\section{Obscure Thing}
+
+\lipsum[38]
+
+\section{Unclear Thing}
+
+\lipsum[41]
+
+\end{document}
+
+
+%
+%and the energy of $g(\unit{x})$ on the whole sphere $\untsph$ is
+%\[
+%	\norm{g}^2%=\innerp{g}{g}
+%	=\int_{\untsph}\abs[\big]{g(\unit{y})}^2\,ds(\unit{y})
+%	=\sum_{n=0}^{N-1} \abs[\big]{\coeff{g}_n}^2.
+%\]
+%
+%Since we \eqref{eqn:g-sexpansion} can
+%\begin{equation}
+%\label{eqn:g-rexpansion}
+%	g(\unit{x})=\sum_{n=0}^{N-1} \sqrt{\lambda_n}\,\coeff{g}_n\frac{v_n(\unit{x})}{\lambda_n},
+%	\quad \unit{x}\in R,
+%\end{equation}
+%we see the energy of $g(\unit{x})$ in region $R$ is
+%\[
+%	\norm{g}_R^2%=\innerp{g}{g}_R
+%	=\int_{R}\abs[\big]{g(\unit{y})}^2\,ds(\unit{y})
+%	=\sum_{n=0}^{N-1} \lambda_n\abs[\big]{\coeff{g}_n}^2
+%\]
+%
+%\subsection{hhh}
+%\begin{align*}
+%	\sqrt{\lambda_n}\,\coeff{g}_n
+%		&=\int_{R}g(\unit{y})\conj{\frac{v_n(\unit{x})}{\sqrt{\lambda_n}}\,ds(\unit{y})\\
+%	&=\frac{1}{\lambda_n}\innerp{g}{v_n}_R
+%\end{align*}
+%
+
+\newpage
+\section{Towards robust modelling in a region}
+
+\subsection{Orthonormal expansion in a region}
+
+Now suppose we have a band-limited function $g(\unit{x})$ but only interested in modelling it in $\unit{x}\in R$ rather than all $\untsph$. Then we expand in terms of an orthonormal sequence of eigenfunctions normalized for $R$
+\begin{equation}
+\label{eqn:g-Rexpansion}
+	g(\unit{x})=\sum_{n=0}^{N-1} \coeff{g}_{h;n}\,\frac{v_n(\unit{x})}{\sqrt{\lambda_n}},
+	\quad \unit{x}\in R,
+\end{equation}
+where
+\[
+	\coeff{g}_{h;n}
+	=\innerp[\Big]{g}{\frac{v_n}{\sqrt{\lambda_n}}}_h
+	=\frac{1}{\sqrt{\lambda_n}}\int_{R} g(\unit{x})\,\conj{v_n(\unit{x})}\,ds(\unit{x}).
+\]
+
+It is interesting to note that $v_n(\unit{x})$ is also well-defined for $\unit{x}\in\untsph\setminus{}R$, but this has no influence on \eqref{eqn:g-Rexpansion}.  However, it may be advantageous to consider the behaviour on the whole sphere to regularize the behaviour within the subregion.  For example, we may not want to admit an expansion within the region if there is an explosion of energy on the rest of the sphere.  Within the region the energy is
+\[
+	\norm{g}_h^2%=\innerp{g}{g}_h
+	=\int_{R}\abs[\big]{g(\unit{y})}^2\,ds(\unit{y})
+	=\sum_{n=0}^{N-1}\abs[\big]{\sqrt{\lambda_n}\,\coeff{g}_n}^2
+\]
+
+Using the orthonormal sequence of eigenfunctions which are normalized for $\untsph$ we have
+\begin{equation}
+\label{eqn:g-expansion}
+	g(\unit{x})=\sum_{n=0}^{N-1} \coeff{g}_n\,v_n(\unit{x}),
+	\quad \unit{x}\in\untsph,
+\end{equation}
+where
+\[
+	\coeff{g}_n
+	=\innerp[\big]{g(\unit{x})}{v_n(\unit{x})}
+	=\int_{\untsph} g(\unit{x})\,\conj{v_n(\unit{x})}\,ds(\unit{x}).
+\]
+So the energy on the whole sphere $\untsph$ is
+\[
+	\norm{g}^2=\innerp{g}{g}=\int_{\untsph}\abs[\big]{g(\unit{y})}^2\,ds(\unit{y})=\sum_{n=0}^{N-1} \abs[\big]{\coeff{g}_n}^2
+\]
+
+\subsection{Energy}
+
+\[
+	\norm{g}_h^2
+	=\sum_{n=0}^{N-1} \abs[\big]{\coeff{g}_{h;n}}^2
+	=\int_{R}\abs[\big]{g(\unit{x})}^2\,ds(\unit{x})
+\]
+
+\[
+	\norm{g}^2
+	=\sum_{n=0}^{N-1} \abs[\big]{\coeff{g}_n}^2
+%	=\sum_{n=0}^{N-1} \frac{1}{\lambda_n}\abs[\big]{\coeff{g}_{h;n}}^2
+	=\int_{\untsph}\abs[\big]{g(\unit{x})}^2\,ds(\unit{x})
+\]
+
+\begin{align*}
+	g(\unit{x})
+	&=\sum_{n=0}^{N-1} \parn[\Big]{\int_{\untsph} g(\unit{y})\,\conj{v_n(\unit{y})}\,ds(\unit{y})}\,v_n(\unit{x}),
+	\quad \unit{x}\in\untsph,\\
+	&=\sum_{n=0}^{N-1} \frac{1}{\lambda_n} \parn[\Big]{\int_{R} g(\unit{y})\,\conj{v_n(\unit{y})}\,ds(\unit{y})}\,v_n(\unit{x}),
+	\quad \unit{x}\in\untsph,
+\end{align*}
+
+\[
+	\coeff{g}_{h;n}=\sqrt{\lambda_n}\coeff{g}_n
+\]
+
+\begin{align*}
+	g(\unit{x})
+	&=\sum_{n=0}^{N-1} \coeff{g}_n\,v_n(\unit{x}),\quad \unit{x}\in\untsph,\\
+	&=\sum_{n=0}^{N-1} \coeff{g}_n\,\sqrt{\lambda_n}\,\frac{1}{\sqrt{\lambda_n}}\,v_n(\unit{x}),\quad \unit{x}\in\untsph,\\
+	&=\sum_{n=0}^{N-1} \coeff{g}_{h;n}\,\frac{1}{\sqrt{\lambda_n}}\,v_n(\unit{x}),\quad \unit{x}\in\untsph,
+\end{align*}
+
+
 \newpage
 
 \section{Dummy}
@@ -344,50 +559,24 @@ For illustration, on the Earth, normalized with unit radius, let the region $R\i
 \lipsum[47]
 \end{IEEEproof}
 
-\begin{table}[tbp]
-\renewcommand{\arraystretch}{1.0}
-\caption{Model parameters in the general form}
-\begin{center}
-	\begin{tabular}{@{\,}cccc@{\,}}
-		\toprule
-			\multirow{2}{*}{\bfseries Model} & \multirow{2}{*}{\bfseries Expansion}
-				& \bfseries Coefficients & \bfseries Weighting \\
-			& & $\displaystyle\iota_{n;q}^{m}$ & $g_{n}(k,r)$ \\[1mm]
-		\midrule
-			1 & Source Distribution & $\gamma_{n;q}^{m}$
-				& $ik\, j_{n}(ks) h_{n}^{(1)}(kr)$ \\[0.8mm]
-			2 & Radiating Solution & $\zeta_{n;q}^{m}$
-				& $h_{n}^{(1)}(kr)$ \\[0.8mm]
-			3 & Nominal Radius& $\rho_{n;q}^{m[r_{0}]}$
-				& $h_{n}^{(1)}(kr)/h_{n}^{(1)}(kr_{0})$ \\[1mm]
-		\bottomrule
-	\end{tabular}
-\end{center}
-\label{tab:models}
-\end{table}
-
-\newskip\conditionsep
-\conditionsep=10pt minus5pt
-
-
 Equation example
 \ifCLASSOPTIONtwocolumn
 \begin{multline}
 	\iota_{n;q}^{m} = 4\sqrt{1-\pi^{2}}
 		\int_{0}^{\mathrlap{k_{u}}\;}
-		\frac{1}{g_{n}(k,r_{1})}
+		\frac{1}{g_n(k,r_{1})}
 		\times \\
 	\int_{\untsph} H(r_{1},\unit{x};k)
-		\conj{Y_{n}^{m}(\unit{x})}\,ds(\unit{x})\, \conj{\varphi_{q}(k)}\,dk.
+		\conj{Y_n^{m}(\unit{x})}\,ds(\unit{x})\, \conj{\varphi_{q}(k)}\,dk.
 \end{multline}
 \else
 \begin{subequations}
 \begin{equation}
 	\iota_{n;q}^{m} = 4\sqrt{1-\pi^{2}}
 		\int_{0}^{\mathrlap{k_{u}}\;}
-		\frac{1}{g_{n}(k,r_{1})} 
+		\frac{1}{g_n(k,r_{1})} 
 	\int_{\untsph} H(r_{1},\unit{x};k)
-		\conj{Y_{n}^{m}(\unit{x})}\,ds(\unit{x})\, \conj{\varphi_{q}(k)}\,dk,\quad r_1>a.
+		\conj{Y_n^{m}(\unit{x})}\,ds(\unit{x})\, \conj{\varphi_{q}(k)}\,dk,\quad r_1>a.
 \end{equation}
 \end{subequations}
 \fi
@@ -395,29 +584,8 @@ or using the {\tt breqn} package
 \begin{dmath}
 	\iota_{n;q}^{m} = 4\pi
 		\int_{0}^{\mathrlap{k_{u}}\;}
-		\frac{1}{g_{n}(k,r_{1})} \times
+		\frac{1}{g_n(k,r_{1})} \times
 	\int_{\untsph} H(r_{1},\unit{x};k)
-		\conj{Y_{n}^{m}(\unit{x})}\,ds(\unit{x})\, \conj{\varphi_{q}(k)}\,dk%\condition{for $r_1>a$}.
+		\conj{Y_n^{m}(\unit{x})}\,ds(\unit{x})\, \conj{\varphi_{q}(k)}\,dk%\condition{for $r_1>a$}.
 \end{dmath}
-
-
-\section{Conclusions}
-
-\lipsum[28]
-
-\bibliography{IEEEabrv,xxx}
-
-\appendices
-
-\section{Obscure Thing}
-
-\lipsum[38]
-
-\section{Unclear Thing}
-
-\lipsum[39-41]
-
-\end{document}
-
-
 

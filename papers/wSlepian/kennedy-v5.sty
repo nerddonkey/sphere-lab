@@ -1,0 +1,485 @@
+\ProvidesPackage{kennedy-v5}[2013/01/24 v0.994]
+
+\RequirePackage[usenames,dvipsnames,pdftex,gray]{xcolor} % gray forces grayscale; ,table option clashes with Cambridge
+
+\RequirePackage{natbib}
+
+%%%% Core
+\RequirePackage[pdftex,final]{graphicx}
+\RequirePackage{etex} % helps hyperref
+%\RequirePackage[colorlinks,urlcolor=blue!15!black,linkcolor=blue!15!black]{hyperref}
+\RequirePackage{booktabs} % nice table objects
+\RequirePackage{mathtools} % \DeclareDelimiter etc
+%% 24 July 2012 \RequirePackage{verbatim}% comment environment
+\RequirePackage{amsmath,amsthm,amssymb}
+\RequirePackage{enumerate}
+\RequirePackage{xspace} % use to terminate some macros
+\RequirePackage{multicol} % two or more columns
+\RequirePackage{adjmulticol} % adjust margins on multicol
+\RequirePackage[lofdepth,lotdepth,captionskip=2pt]{subfig} % robust replacement for deprecated subfigure
+\RequirePackage{float}
+\RequirePackage{lscape} % to rotate table using landscape environment use \usepackage[pdftex]{lscape}
+\RequirePackage{multirow} % for tables
+%% 24 July 2012 \usepackage{type1cm} % allow full scalable fonts: type1cm or type1ec
+\RequirePackage{array} % adds option to tabular such as @m{} vs @p{} and >{}
+%% 24 July 2012 \usepackage[color]{showkeys}
+\RequirePackage{varwidth}
+\RequirePackage{lmodern} % fixes LaTeX Font Warning: Size substitutions with differences
+
+\RequirePackage{tikz}
+\usetikzlibrary{shapes.misc}
+\usetikzlibrary{matrix}
+\usetikzlibrary{arrows,backgrounds,fit,calc}
+
+\newcommand{\fboznodefillcolor}{black!3}
+\tikzset{fboznode/.style={chamfered rectangle, draw=black, thick,
+	fill=\fboznodefillcolor, chamfered rectangle sep=0.6pt,
+	inner sep=2.2mm, anchor=base}}
+\newcommand{\fboz}[1]{\tikz[baseline]{ % baseline lines up with any equation number
+	\node [fboznode] {$ \displaystyle #1 $};}}
+
+\setlength\parindent{10pt}
+%\setlength{\oddsidemargin}{8pc}
+%% 24 July 2012 \setlength{\evensidemargin}{\oddsidemargin}
+
+
+%%%% [mathtools] Norm, sets, inner products etc
+\DeclarePairedDelimiterX\abs[1]{\lvert}{\rvert}{#1}
+\DeclarePairedDelimiterX\brak[1]{\lbrace}{\rbrace}{#1}
+\DeclarePairedDelimiterX\cardinality[1]{\lvert}{\rvert}{#1}
+\DeclarePairedDelimiterX\innerp[2]{\langle}{\rangle}{#1,#2}
+\DeclarePairedDelimiterX\norm[1]{\lVert}{\rVert}{#1}
+\DeclarePairedDelimiterX\paren[1]{(}{)}{#1} % delete
+\DeclarePairedDelimiterX\parn[1]{(}{)}{#1}
+\DeclarePairedDelimiterX\sequ[1]{\lbrace}{\rbrace}{#1}
+\DeclarePairedDelimiterX\set[1]{\lbrace}{\rbrace}{#1}
+\DeclarePairedDelimiterX\sqrb[1]{[}{]}{#1}
+\DeclarePairedDelimiterX\coeff[1]{(}{)}{#1}
+
+\newlength{\rule@size}\setlength{\rule@size}{1.2pt}%{2pt}
+%\newcommand{\taperhrule}[2]{% tries to emulate \hrule's behaviour wrt surrounding white space
+%	\nointerlineskip\vskip#2\smash{\resizebox{#1}{#2}{% \nointerlineskip
+%	\begin{tikzpicture}
+%		\filldraw[line width=10pt]
+%%		\fill
+%			(0,1) -- (3,3) -- (7,3) -- (10,1) --
+%			(10,-1) -- (7,-3) -- (3,-3) -- (0,-1) -- cycle;
+%	\end{tikzpicture}}}\nointerlineskip}
+\newcommand{\taperhrule}[2]{% tries to emulate \hrule's behaviour wrt surrounding white space
+	\nointerlineskip\hbox{\resizebox{#1}{#2}{%
+	\begin{tikzpicture}
+		\fill (0,1) -- (3,3) -- (7,3) -- (10,1) -- (10,-1) -- (7,-3) -- (3,-3) -- (0,-1) -- cycle;
+	\end{tikzpicture}}}%
+	\nointerlineskip}
+\newcommand{\taphrule}{\taperhrule{\linewidth}{\rule@size}}% emulate plain \hrule \linewidth
+
+%%%% theorem styles
+\newcommand{\END}{\hspace{\stretch{1}}\smash{\color{black!80}\scalebox{0.7}{$\qedsymbol$}}}
+\newtheoremstyle{thmStyle}%
+	{3mm plus1mm minus0mm} % Space above
+	{5mm plus2mm minus2mm} % Space below
+	{\it} % Body font
+	{0mm} % Indent amount1
+	{\sf\bfseries} % Theorem head font
+	{.} % Punctuation after theorem head {:}
+	{0.5em plus.5em minus.1em} % Space after theorem head2 .5em plus.5em minus.1em
+	{\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}} % Theorem head spec (can be left empty, meaning ÔnormalÕ)
+\newtheoremstyle{prbStyle}%
+	{3mm plus1mm minus0mm} % Space above
+	{3mm plus1mm minus0mm} % Space below
+	{} % Body font
+	{0pt} % Indent amount1
+	{\sf\bfseries} % Theorem head font
+	{.} % Punctuation after theorem head {:}
+	{.5em plus.5em minus.1em} % Space after theorem head2
+	{\thmname{#1}\thmnumber{#2}\thmnote{ (#3)}} % Theorem head spec (can be left empty, meaning ÔnormalÕ)
+\newtheoremstyle{exaStyle}%
+	{3mm plus1mm minus0mm} % Space above
+	{3mm plus1mm minus0mm} % Space below
+	{\hangindent=1.5pc \parindent=28pt} % Body font
+	{0.75pc} % Indent amount1 1.5pc
+	{\sf\bfseries} % Theorem head font
+	{.} % Punctuation after theorem head {:}
+	{.5em plus.5em minus.1em} % Space after theorem head2
+	{\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}} % Theorem head spec (can be left empty, meaning ÔnormalÕ)
+\theoremstyle{thmStyle}
+\newtheorem{Theor@m}{Theorem}[chapter]
+\newenvironment{Theorem}{\begin{Theor@m}}{\END\end{Theor@m}}
+\newtheorem{Coroll@ry}[Theor@m]{Corollary}
+\newenvironment{Corollary}{\begin{Coroll@ry}}{\END\end{Coroll@ry}}
+\newtheorem{D@finition}{Definition}[chapter]
+\newenvironment{Definition}{\begin{D@finition}}{\END\end{D@finition}}
+\newtheorem*{N@tion}{Notion}
+\newenvironment{Notion}{\begin{N@tion}}{\END\end{N@tion}}
+
+\theoremstyle{prbStyle}
+\newtheorem{Problem}{}[chapter]
+\newtheorem*{Pr@of}{Proof}
+\newenvironment{Proof}{\begin{Pr@of}}{\QED\end{Pr@of}}
+
+\theoremstyle{exaStyle}
+\newtheorem{Ex@mple}{Example}[chapter]
+\newenvironment{Example}{\displayskipshrink\begin{Ex@mple}}{\END\end{Ex@mple}}
+\newtheorem{Rem@rk}{Remark}[chapter]
+\newenvironment{Remark}{\displayskipshrink\begin{Rem@rk}}{\END\end{Rem@rk}}
+
+\newcommand{\mytypeout}[1]{\typeout{\space}\typeout{****************** "#1" ******************\space }\typeout{\space}}
+
+\newcommand{\displayskipshrink}{%
+	\setlength{\abovedisplayskip}{4.0pt plus 1.0pt minus 1.0pt}
+	\setlength{\abovedisplayshortskip}{0pt plus 1.0pt minus 1.0pt}
+	\setlength{\belowdisplayskip}{4.0pt plus 1.0pt minus 1.0pt}
+	\setlength{\belowdisplayshortskip}{4.0pt plus 1.0pt minus 1.0pt}}
+
+
+\newenvironment{Problems}[1][Problems]{%
+	\displayskipshrink
+	\par\addvspace{4mm plus5mm minus1mm}\pagebreak[3]% 6mm
+	\noindent{\hspace*{-4pc}\sf\bfseries #1}\par\taphrule}%\par\taphrule}
+	{\taphrule\par\addvspace{6mm plus15mm minus1mm}\@endparenv}
+
+\newcommand{\QED}{\hspace{\stretch{1}}\smash{\qedsymbol}}
+\newenvironment{Answer}[1]{%
+	\displayskipshrink
+	\par\addvspace{3mm plus1mm minus1mm}%
+	\noindent{\sf\bfseries Answer to Problem \ref{#1}.~(page \pageref{#1}):} \ignorespaces}%
+	{\QED\par\addvspace{3mm plus1mm minus1mm}\@endparenv}
+
+%:Matrix environments
+\colorlet{palefill}{black!3}
+\colorlet{emphfill}{black!10}
+\colorlet{highlightdraw}{black!30}
+\tikzset{
+	mathnode/.style={rectangle, draw=none, fill=none, thin,
+		inner sep=0mm, minimum height=6mm, minimum width=7mm,
+		anchor=base, text height=.7em, text depth=.2em},
+	tightemptynode/.style={inner sep=0mm},
+	partitiondraw/.style={draw=highlightdraw, thick, dash pattern=on 6pt off 2pt},
+	entries/.style={matrix of math nodes, nodes = {mathnode}, ampersand replacement=\&,
+				column sep={7.15mm,between origins},row sep={6.15mm,between origins}},
+	highlightnode/.style={mathnode, fill=emphfill, partitiondraw},
+	every fit/.append % http://tex.stackexchange.com/questions/61064/badbox-from-pgf-layer-using-fit
+		style={text badly centered}
+	}
+
+\newenvironment{Pmatrix}[1][6pt]{% adds a bit more space around pmatrix
+	\setlength{\arraycolsep}{#1}
+	\left(\hspace{0.8mm}
+	\begin{matrix}}{%
+	\end{matrix}
+	\hspace{0.8mm}\right)}
+	
+\newenvironment{Jmatrix}[1][3pt]{% for wigner 3j matrices
+	\setlength{\arraycolsep}{#1}
+	\left(\hspace{0.5mm}
+	\begin{matrix}}{%
+	\end{matrix}
+	\hspace{0.5mm}\right)}
+
+\newenvironment{Omatrix}[1][3pt]{% for some operator matrices
+	\begin{pmatrix}\hspace*{-1mm}}{%
+	\hspace*{-1mm}\end{pmatrix}}
+
+\newenvironment{Table}[1][1.3]{% for tables
+	\begin{table}[tbp]
+	\renewcommand\arraystretch{#1}
+	\centering\small\sffamily}{\end{table}}
+
+\newenvironment{Plist}[1][P]{% enumerated questions
+	\displayskipshrink
+	\begin{enumerate}[\sf\bfseries\quad {#1}1:]\setlength{\itemsep}{1.4mm}}{\end{enumerate}}
+\newenvironment{Alist}{% enumerated questions
+	\displayskipshrink
+	\begin{enumerate}[\sf\bfseries\quad (a)]\setlength{\itemsep}{1.0mm}}{\end{enumerate}}
+	%% RAK 24 July 2012 was 1.4mm %% RAK 21 August 2012 a) -> (a)
+
+%%%%
+\newcommand{\page@stuff}[1]{, p.\,\pageref{#1}}
+\newcommand{\figref}[1]{\figurename~\ref{#1}}
+\newcommand{\Figref}[1]{\figref{#1}\page@stuff{#1}}
+\newcommand{\secref}[1]{Section~\ref{#1}}
+\newcommand{\Secref}[1]{\secref{#1}\page@stuff{#1}}
+\newcommand{\chapref}[1]{Chapter~\ref{#1}}
+\newcommand{\Chapref}[1]{\chapref{#1}\page@stuff{#1}}
+\newcommand{\defref}[1]{Definition~\ref{#1}}
+\newcommand{\Defref}[1]{\defref{#1}\page@stuff{#1}}
+\newcommand{\thmref}[1]{Theorem~\ref{#1}}
+\newcommand{\Thmref}[1]{\thmref{#1}\page@stuff{#1}}
+\newcommand{\corref}[1]{Corollary~\ref{#1}}
+\newcommand{\Corref}[1]{\corref{#1}\page@stuff{#1}}
+\newcommand{\prbref}[1]{Problem~\ref{#1}}
+\newcommand{\Prbref}[1]{\prbref{#1}\page@stuff{#1}}
+\newcommand{\tabref}[1]{Table~\ref{#1}}
+\newcommand{\Tabref}[1]{\tabref{#1}\page@stuff{#1}}
+\newcommand{\remref}[1]{Remark~\ref{#1}}
+\newcommand{\Remref}[1]{\remref{#1}\page@stuff{#1}}
+\newcommand{\exaref}[1]{Example~\ref{#1}}
+\newcommand{\Exaref}[1]{\exaref{#1}\page@stuff{#1}}
+\newcommand{\Eqref}[1]{\eqref{#1}\page@stuff{#1}}
+\newcommand{\partref}[1]{Part~\ref{#1}}
+\newcommand{\Partref}[1]{\partref{#1}\page@stuff{#1}}
+
+%%%% spaces
+\newcommand{\Ltwo}{L^{2}}
+\newcommand{\ltwo}{\ell{}^{\hspace{0.1em}2}}
+\newcommand{\Hspc}{\mathcal{H}} % Hilbert space
+\newcommand{\suB}[2]{\smash{#1_{\hspace{-0.1em}#2}^{\vstrut{0mm}{0mm}{1mm}}}}
+\newcommand{\Rspc}{\suB{\Hspc}{\lambda}} % Fourier weighted Hilbert space
+\newcommand{\Kspc}{\suB{\Hspc}{K}}  % RKHS space
+%\newcommand{\Rspc}{\mathcal{R}} % Fourier weighted Hilbert space
+%\newcommand{\Rspc}{\Hspc_{\lambda}} % Fourier weighted Hilbert space
+%\newcommand{\Rspc}{\Hspc_{\hspace{-0.1em}\lambda}^{\vstrut{0mm}{0mm}{1mm}}} % Fourier weighted Hilbert space %-0.16667em
+%\newcommand{\Kspc}{\Hspc_{K}}   % RKHS space
+\newcommand{\Mani}{\mathfrak{M}}
+\newcommand{\Sub}{\mathfrak{N}}
+\newcommand{\midpoint}{(\alpha+\beta)/2}
+\newcommand{\ab}{\alpha,\beta}
+
+%%%% arrows
+\newcommand{\tendsto}{\rightarrow}
+\newcommand{\longtendsto}{\longrightarrow}
+\newcommand{\toinf}{\tendsto\infty}
+\newcommand{\weaklyconvergesto}{\rightharpoonup}
+\newcommand{\stronglyconvergesto}{\rightarrow}
+%%%% sets
+\newcommand{\cardReals}{\mathfrak{c}}
+\newcommand{\cmplx}{\mathbb{C}} % complex numbers
+\newcommand{\reals}{\mathbb{R}} % real numbers
+\newcommand{\nats}{\mathbb{N}} % natural numbers
+\newcommand{\rats}{\mathbb{Q}} % rational numbers
+\newcommand{\nnints}{\mathbb{Z}^{\star}} % non-negative integers
+\newcommand{\nnrats}{\mathbb{Q}^{\star}} % non-negative rationals
+\newcommand{\ints}{\mathbb{Z}}
+\newcommand{\untsph}{\mathbb{S}^{2}} % unit sphere
+\newcommand{\untcrc}{\mathbb{S}^{1}} % unit circle
+
+\newcommand{\hsspc}{\mathcal{H}^{0}(\untsph)}%\!,ds)}
+\newcommand{\hspcR}{\mathcal{H}_{R}(\untsph)}%\!,ds)}
+\newcommand{\hsspcP}{\mathcal{H}_{\theta_0}^0(\untsph)}%\!,ds)}
+\newcommand{\hsspcL}{\mathcal{H}_{L}^0(\untsph)}%\!,ds)}
+\newcommand{\hspcL}{\mathcal{H}_{L}(\untsph)}%\!,ds)}
+\newcommand{\proj}{\mathcal{B}^{\hspace{0.5pt}0}}
+\newcommand{\lsph}{L^2(\untsph)}
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+
+\newcommand{\otoprule}{\midrule[\heavyrulewidth]} % used in tables enhances book tabs package
+
+\newcommand{\convoper}[1]{#1\odot}%{\mathcal{\uppercase{#1}}}
+\DeclareMathOperator{\diag}{diag}
+\newcommand{\indicatorFunction}{\scalebox{1.1}{$\boldsymbol{1}$}}%{\mathbbmss{1}} % problem with Type 3 font
+\newcommand{\notimplies}{\hspace*{2mm}\not\hspace*{-2mm}\implies}
+
+\newcommand{\wignerd}[3][(\vartheta)]{d^{\hspace{0.3mm}#2}_{#3}{#1}}
+\newcommand{\wignerD}[3][(\varphi,\vartheta,\omega)]{D^{\hspace{0.3mm}#2}_{#3}{#1}}
+
+\floatstyle{plaintop}
+\newfloat{cartoon}{htp}{lop}
+\newcommand{\historyprofile}[6][26pc]{%
+	\begin{cartoon}[tbp]
+		\indexitemtwo{#3, #2 (#4)}{biography and cartoon}
+		\captionsetup{format=hang,indention=0pc} %1.5pc
+		\caption*{\setlength\parindent{10pt}%
+			\hspace*{-1.5pc}{\sffamily\bfseries #3, #2 (#4)} --- #5}%\label{fig:#2}
+		\centering
+		%\fbox{%
+			\includegraphics[width=#1]{#6}%}
+		\vskip5pt
+		\taphrule
+	\end{cartoon}}
+
+%%%%%
+
+% For comparison, the existing overlap macros:
+% \def\llap#1{\hbox to 0pt{\hss#1}}
+% \def\rlap#1{\hbox to 0pt{#1\hss}}
+\def\clap#1{\hbox to 0pt{\hss#1\hss}}
+\def\mathllap{\mathpalette\mathllapinternal}
+\def\mathrlap{\mathpalette\mathrlapinternal}
+\def\mathclap{\mathpalette\mathclapinternal}
+\def\mathllapinternal#1#2{%
+	\llap{$\mathsurround=0pt#1{#2}$}}
+\def\mathrlapinternal#1#2{%
+	\rlap{$\mathsurround=0pt#1{#2}$}}
+\def\mathclapinternal#1#2{%
+	\clap{$\mathsurround=0pt#1{#2}$}}
+
+\setlength{\tabcolsep}{6pt}
+\setlength{\arraycolsep}{5pt}
+\newcommand{\Neg}{\mathllap{-}}
+\newcommand{\Pos}{\phantom{+}}
+\newcommand{\N}{\scalebox{0.65}[1.0]{$\!\scriptstyle-$}} % short subscript minus sign
+
+%%%%%
+
+\newcommand{\boldhat}[1]{\widehat{\bm{#1}}}
+\newcommand{\vecf}[1]{\textsf{#1}}
+\newcommand{\matop}[1]{\mathbf{#1}}
+\newcommand{\vcoeff}[1]{\mathbf{#1}}
+\newcommand{\unit}[1]{\boldhat{#1}}
+\newcommand{\conj}[1]{\overline{#1}} % conjugate
+\newcommand{\realpart}[1]{\mathfrak{Re}{#1}}
+\newcommand{\imagpart}[1]{\mathfrak{Im}{#1}}
+
+\newcommand{\vstrut}[3]{% {\vrule height #1 width #2 depth #3}
+	\vrule height #1 width 0mm depth #3\vrule height 0mm width #2 depth 0mm}
+
+\makeatletter
+\newcommand{\env@dbendsymbol}{\smash{\color{black}\raisebox{1.5mm}{\hbox to 8mm{\dbend\hss}}}}
+\newlength{\env@minipagewidth}
+\newlength{\env@contentwidth}
+\tikzset{env@node/.style={fboznode, inner sep=3mm, minimum height=12mm}}
+\makeatother
+
+\makeatletter
+\newcommand{\action@fboz}[1]{\tikz[baseline]{
+	\node [env@node] {$ \displaystyle #1 $};}}
+\newenvironment{action}{%
+	\par\addvspace{3mm plus10mm minus1mm}
+	\setlength{\env@contentwidth}{\columnwidth}
+	\addtolength{\env@contentwidth}{-7mm} % < width of 2 * inner sep + line width
+	\setlength{\env@minipagewidth}{\env@contentwidth}
+	\addtolength{\env@minipagewidth}{-8mm} % width of \env@dbendsymbol
+	\begin{lrbox}{\@tempboxa} % begin to save into a savebox
+	\begin{minipage}{\env@minipagewidth}
+		\raggedright\small\tt\color{black}}{%
+	\end{minipage}
+	\end{lrbox} % completed savebox, now write the note
+	\noindent\action@fboz{%
+		\hbox to \env@contentwidth{\env@dbendsymbol\usebox{\@tempboxa}\hspace{\stretch{1}}}}
+	\par\addvspace{3mm plus10mm minus1mm}\@endparenv}
+%%%%
+\newcommand{\takehome@fboz}[1]{\tikz[baseline]{
+	\node [env@node] {$ \displaystyle #1 $};}}
+\newenvironment{takehome}[1][]{% \newenvironment{takehome}[1][default]
+	\addvspace{4mm}
+	\setlength{\env@contentwidth}{\columnwidth}
+%	\addtolength{\env@contentwidth}{-11mm} % width of 2 * (inner sep + line width)
+	\addtolength{\env@contentwidth}{-9mm} % width of 2 * (inner sep + line width)
+	\setlength{\env@minipagewidth}{\env@contentwidth}%
+	\begin{lrbox}{\@tempboxa}%
+	\begin{minipage}{\env@minipagewidth}
+		%\setlength\parskip{5\p@ \@plus \p@} % might need to match to global value
+		{\sf\bfseries Take-home messages #1}\par}{%
+	\end{minipage}
+	\end{lrbox}
+	\noindent\takehome@fboz{%
+		\hbox to \env@contentwidth{%
+		\usebox{\@tempboxa}\hss}}
+	\par\vfil\@endparenv}%\addvspace{3mm plus40mm}}
+\makeatother
+
+%%%% index related
+\newcommand{\indexbegin}[1]{\index{#1@{\bfseries #1}|(}}
+\newcommand{\indexend}[1]{\index{#1@{\bfseries #1}|)}}
+\newcommand{\indexbegintwo}[2]{\index{#1@{\bfseries #1}!#2|(}}
+\newcommand{\indexendtwo}[2]{\index{#1@{\bfseries #1}!#2|)}}
+\newcommand{\indexitem}[1]{\index{#1@{\bfseries #1}}}
+\newcommand{\indexitemtwo}[2]{\index{#1@{\bfseries#1}!#2}}
+\newcommand{\keyword}[1]{#1%{\color{red}#1}% \xspace another possibility
+	\indexitem{#1}}
+\newcommand{\historydude}[3]{#1 #2 (#3)\indexitem{#2, #1 (#3)}}
+
+\hyphenation{band-limited}
+
+\newcommand{\qq}[1]{``#1''}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	part1_HS	 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\hghlght}[1]{\underline{\mathbf{#1}}}
+\newcommand{\sumn}{\sum_{n}}
+\newcommand{\sumN}{\sum_{n=1}^{N}}
+\newcommand{\suminfty}{\sum_{n=1}^{\infty}}
+\newcommand{\dfn}{\triangleq}
+\newcommand{\intp}{\int_{0}^{\mathrlap{\pi}}\,} % int_0^\pi
+\newcommand{\intpp}{\int_{0}^{\mathrlap{2\pi}}\,} % int_0^{2\pi}
+\newcommand{\intso}{\intpp\intp\intpp}
+\newcommand{\intsph}{\int_{\mathrlap{\untsph}}\hspace{2mm}} % int_\untsph
+%\newcommand{\intsph}{\int_{\untsph}}
+\newcommand{\intR}{\int_{\mathrlap{R}}\hspace{2mm}} % int_{R}
+\newcommand{\intt}[1]{\int_{0}^{\mathrlap{#1}}\,} % int_0^#1
+\newcommand{\sumnats}{\sum_{n\in\nats}}
+
+%\intt{\theta_0}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   part2a_Oper   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\op}[1]{\mathcal{#1}}
+\newcommand{\Apad}{\hspace{0.05em}}%{\hspace{0.25mm}}
+\newcommand{\nApad}{\hspace{-0.05em}}%{\hspace{0.25mm}}
+\newcommand{\Npad}{\hspace{-0.32mm}}
+\newcommand{\adjoint}[2][\Apad]{#2^{#1\star}}
+%\newcommand{\adjoint}[2][]{#2{\Apad}^{*}_{#1}}
+%\newcommand{\transpose}[1]{#1{\Apad}^{T}}
+
+\renewcommand{\tilde}[1]{\widetilde{#1}}
+
+\newcommand{\sctext}[1]{\text{\sc\footnotesize #1}}
+\newcommand{\sctextt}[1]{\text{\sc\small #1}}
+\newcommand{\sctextsc}[1]{\text{\sc\scriptsize #1}}
+\newcommand{\vertlab}[2]{\begin{array}{c}\dislaystyle #1\\[2mm] \sctext{#2}\end{array}}
+\newcommand{\vertlabb}[3]{\begin{array}{c}\dislaystyle #1\\[1.5mm] \sctext{#2}\\[-1mm] \sctext{#3}\end{array}}
+\newcommand{\vertlabc}[2]{\begin{array}{c}#1 \\[-1mm] \sctext{#2}\end{array}}
+\newcommand{\vertlabd}[2]{\begin{array}{c}\sctext{#2} \\[0mm] #1\end{array}}
+
+\newcommand{\npad}{\vstrut{1.8mm}{0mm}{0mm}}
+\newcommand{\nN}{{}_{n=1\npad}^{N}}
+\newcommand{\ninfty}{{}_{n=1\npad}^{\infty}}
+\newcommand{\phiseq}{\sequ{\varphi_{n}}\ninfty}
+
+\newcommand{\comdiagram}[1]{\raisebox{-6mm}{\includegraphics[scale=0.8]{#1}}}
+\newcommand{\fancyboxed}[1]{%\fboz{
+	\makebox[\columnwidth-18mm][l]{$\displaystyle #1$}}%}
+\newcommand{\superboxed}[4]{%
+	\fancyboxed{#1\quad\hbox to 27mm{\hss$\begin{array}{c} #2\colon\\ #3 \end{array}$\hss} \text{\quad where\quad} #4}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   part3_Sphere   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\tp}{\theta,\phi}
+\newcommand{\cksph}{\breve{Y}}
+\newcommand{\ckalf}{\breve{P}}
+%\newcommand{\candk}{C\scalebox{0.9}{\&}K\xspace}
+\newcommand{\candk}{Colton-Kress\xspace}
+\newcommand{\rotmat}{\boldsymbol{R}}
+\newcommand{\rotind}[2]{r_{#1,#2}}
+\newcommand{\rotop}{\op{D}(\varphi,\vartheta,\omega)}
+\newcommand{\sothreeconv}{\circledcirc}
+\newcommand{\isoconv}{\circledast}
+\newcommand{\anisoconv}{\boxdot}
+\newcommand{\commconv}{\odot}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   part3_dimensionality   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\fxk}{F(\boldsymbol{x})}
+\newcommand{\region}[1]{\abs{\boldsymbol{x}} \leqslant #1}
+\newcommand{\phix}{\varphi}
+\newcommand{\bphi}[1]{\phix(\boldsymbol{#1})}
+
+\newcommand{\Dss}[2]{D^{\mathrlap{#1}}_{\mathrlap{#2}}}
+%\newcommand{\bss}[2]{b_{\mathrlap{#1}}^{\mathrlap{#2}}}
+
+\newcommand{\Ltwoinf}{\Ltwo(\reals)}
+%\newcommand{\intinf}{\int_{\mathrlap{-\infty}}^{\mathrlap{\infty}}\hspace{1.5mm}}
+%\newcommand{\intW}{\int_{\mathrlap{-W}}^{\mathrlap{W}}\hspace{2.5mm}}
+%\newcommand{\intT}{\int_{\mathrlap{-T}}^{\mathrlap{T}}\hspace{1.5mm}}
+\newcommand{\sincW}[1]{\frac{\sin W#1}{\pi#1}}
+\newcommand{\sincT}[1]{\frac{\sin T#1}{\pi#1}}
+
+%\newcommand{\Ltwoinf}{\Ltwo_\infty}
+%\newcommand{\intinf}{\int_{-\infty}^{\infty}}
+\newcommand{\intreals}{\int_{-\infty}^{\infty}\!\!}
+\newcommand{\intleg}{\int_{-1}^{+1}\!\!}
+\newcommand{\intW}{\int_{-W}^{W}\!}
+\newcommand{\intT}{\int_{-T}^{T}}
+
+\newcommand{\csin}[1]{\scalebox{1.2}{$\substack{\cos\\ \sin}$}\,#1\phi}%\genfrac{}{}{0pt}{}{\cos}{\sin}\,#1\phi}
+
+\newcommand{\kernop}{\op{L}_{\lambda}}
+%\newcommand{\mphi}{\breve{\smash{\phi}\vstrut{1.5mm}{0mm}{0mm}}}
+\newcommand{\mphi}{\varphi}
+
+\captionsetup{indention=1.5pc,labelsep=period}
+\newcommand{\mathclapwidth}[2][55mm]{\hbox to #1{\hss$\displaystyle #2$\hss}}%\fbox
+\newcommand{\phin}{\sequ{\phi_{n}}_{n\in\nats}}
+\newcommand{\lambdan}{\sequ{\lambda_{n}}_{n\in\nats}}
+

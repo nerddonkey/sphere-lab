@@ -55,3 +55,5 @@ Backup[ ]of[ ]*.numbers/
 
 # Mac finder files and hidden folders
 .DS_Store
+
+*.png

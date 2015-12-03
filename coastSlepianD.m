@@ -46,7 +46,7 @@ tR=thetaR*pi/180;
 pR=phiR*pi/180;
 
 %% Populate the Ntot x Ntot Hermitian D matrix (8.27)
-for Lmax=20%:10:50
+for Lmax=10:10:70
 	fprintf('\n@@ Lmax: %d\n',Lmax)
 	Ntot=(Lmax+1)^2;
 	D=SlepianDH(Lmax,tv,pv,maskR,true);
@@ -67,8 +67,9 @@ for Lmax=20%:10:50
 
 	maxSlepian=-1.0;
 
-	for n=1:3%Ntot-1 % eigenvalue index in descending energy order
+	for n=1:Ntot-1 % eigenvalue index in descending energy order
 		if n>Ntot; break; end
+		if lambda(n)<0.0001; break; end
 		fprintf('@@ Eigenvalue %04d: %8.6f\n',n-1,lambda(n))
 
 		%% n'th eigenvector w with eigenvalue lambda in spectral domain
@@ -120,7 +121,8 @@ for Lmax=20%:10:50
 
 		[az,el]=view(nanmean(coastR,2)); % centre of coastline
 		view(az+coast(r).voff(2),el+coast(r).voff(1)); % offset for aesthetics
-		set(gca,'CameraViewAngle',9) % zoom into scene 9
+		set(gca,'CameraViewAngle',6) % zoom into scene 9 4
+		%set(gca,'CameraTarget',[0.8,0.2,0.1])
 
 		%% Annotate plot
 		llabel=sprintf('$L_{\\mathrm{max}}=%d$\n$\\lambda_{%d}=%8.6f$', Lmax,n-1,lambda(n));
