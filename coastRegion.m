@@ -38,8 +38,8 @@ phiR(nanInd)=NaN; % restore NaN
 %% Find whole-degree enlarged bounding rectangle on region
 thetaMin=max(0.0,floor(min(thetaR)));
 thetaMax=min(180.0,ceil(max(thetaR)));
-phiMin=floor(min(phiR));
-phiMax=ceil(max(phiR));
+phiMin=floor(min(phiR))
+phiMax=ceil(max(phiR))
 
 %% Determine covering mesh [theta,phi] with step <= thetaDeg,phiDeg
 numtt=ceil((thetaMax-thetaMin)/thetaDeg);

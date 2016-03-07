@@ -46,7 +46,7 @@ tR=thetaR*pi/180;
 pR=phiR*pi/180;
 
 %% Populate the Ntot x Ntot Hermitian D matrix (8.27)
-for Lmax=10:10:70
+for Lmax=10%:10:70
 	fprintf('\n@@ Lmax: %d\n',Lmax)
 	Ntot=(Lmax+1)^2;
 	D=SlepianDH(Lmax,tv,pv,maskR,true);
@@ -55,6 +55,7 @@ for Lmax=10:10:70
 	%% Save the D matrix
 	dataName=sprintf('%s_%04d',[dataFolder basename],Lmax);
 	save([dataName '.mat'],'Lmax','D');
+	dlmwrite([dataName '.txt'],D(1:25,1:25),'delimiter','\t','precision',8);
 
 	%% Get spectral eigenstructure and sort
 	[V,lamD]=eig(D); % eigen-structure
@@ -67,7 +68,7 @@ for Lmax=10:10:70
 
 	maxSlepian=-1.0;
 
-	for n=1:Ntot-1 % eigenvalue index in descending energy order
+	for n=1:32%Ntot-1 % eigenvalue index in descending energy order
 		if n>Ntot; break; end
 		if lambda(n)<0.0001; break; end
 		fprintf('@@ Eigenvalue %04d: %8.6f\n',n-1,lambda(n))

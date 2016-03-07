@@ -1,0 +1,254 @@
+% !TEX spellcheck = en_US
+%% single column for submission and review
+%\documentclass[journal, onecolumn, 12pt, a4paper, draftcls]{IEEEtran}
+
+%% double column to emulate final version (for submission and review)
+\documentclass[10pt, twocolumn, twoside]{IEEEtran}
+
+%% double column for conference
+%\documentclass[conference]{IEEEtran}
+
+\IEEEoverridecommandlockouts
+\bibliographystyle{IEEEtran}
+
+\usepackage[cmex10]{amsmath} % prevents amsmath from using a Type 3 font for math within footnotes
+\interdisplaylinepenalty=2500 % (re)allows page breaks within aligned equations
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{mathtools}
+\usepackage{cite}
+\usepackage{xcolor}
+\usepackage{enumerate}
+\usepackage{booktabs} % nice table objects
+\usepackage{multirow}
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{breqn}
+\usepackage{subcaption}
+
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\usepackage{etoolbox}
+\usepackage{hyperref}
+%\usepackage{bibunits}
+\usepackage{chngcntr}
+
+\counterwithin*{equation}{section}
+\graphicspath{{figs/}{pdf/}{jpg/}{../pdf/}}
+
+%commands
+%\renewcommand{\phi}{\varphi}
+\newcommand{\untsph}{\mathbb{S}^{2}} % unit sphere
+\newcommand{\unit}[1]{\widehat{\bm{#1}}}
+\DeclarePairedDelimiterX\abs[1]{\lvert}{\rvert}{#1}
+\DeclarePairedDelimiterX\parn[1]{(}{)}{#1}
+\DeclarePairedDelimiterX\set[1]{\lbrace}{\rbrace}{#1}
+\DeclarePairedDelimiterX\innerp[2]{\langle}{\rangle}{#1,#2}
+\DeclarePairedDelimiterX\norm[1]{\lVert}{\rVert}{#1}
+\DeclarePairedDelimiterX\brac[1]{[}{]}{#1}
+\DeclarePairedDelimiterX\coeff[1]{(}{)}{#1}
+\DeclareMathOperator{\expectop}{\mathbb{E}} % \expect[\Big]{ f }
+\newcommand{\expect}[2][]{\expectop\set[#1]{#2}}
+
+\newcommand{\figref}[1]{Fig.\,\ref{#1}}
+\newcommand{\tabref}[1]{Table~\ref{#1}}
+\newcommand{\reals}{\mathbb{R}} % real numbers
+\newcommand{\cmplx}{\mathbb{C}} % complex numbers
+\newcommand{\dfn}{\triangleq}
+\newcommand{\conj}[1]{\overline{#1}} % conjugate
+\newcommand{\tendsto}{\rightarrow}
+
+\newtheorem{theorem}{Theorem}%[section]
+\renewcommand{\IEEEQED}{\IEEEQEDopen}
+
+%\defaultbibliographystyle{IEEEtran}
+%\defaultbibliography{IEEEabrv,book-collection,sphtriang}
+
+\begin{document}
+
+\title{Single-Taper Window Design on the Sphere}
+
+\ifCLASSOPTIONconference
+	\author{
+		\IEEEauthorblockN{Rodney~A.~Kennedy}
+			\thanks{This research was supported under the Australian Research Council's Discovery Projects
+				funding scheme (Project No.~DP150101011).}
+		\IEEEauthorblockA{Research School of Engineering,\\
+			College of Engineering and Computer Science,\\
+			The Australian National University,\\ Canberra, ACT 2601, Australia\\
+			Email: rodney.kennedy@anu.edu.au} \and
+		\IEEEauthorblockN{Aiden W.~Kennedy}
+		\IEEEauthorblockA{Research School of Engineering,\\
+			College of Engineering and Computer Science,\\
+			The Australian National University,\\ Canberra, ACT 2601, Australia\\
+			Email: collaborator@anu.edu.au}}
+\else
+	\author{Rodney~A.~Kennedy,~\IEEEmembership{Fellow,~IEEE}, and
+		Collaborator,~\IEEEmembership{Senior Member,~IEEE}
+		\thanks{Rodney~A.~Kennedy and Collaborator are with the Research School of Engineering,
+			College of Engineering and Computer Science,
+			The Australian National University (ANU), Canberra, ACT 2601, Australia
+			(email: $\{$rodney.kennedy, collaborator$\}$@anu.edu.au).}
+		\thanks{This work was supported under the Australian Research Council's Discovery Projects
+			funding scheme (Project No.~DP1094350).}}
+\fi
+
+
+\maketitle
+
+\newcommand{\R}{\mathscr{R}}
+\newcommand{\taper}{w}%{w_{\R}^{\vphantom{g}}}
+
+%\newcommand{\chfn}[2][]{\ifblank{#1}{\chi_{#2}}{\prescript{#1}{}\chi_{#2}}}
+\newcommand{\chfn}{\chi_{\R}^{\vphantom{g}}}
+
+\begin{abstract}
+These are notes from scattered projects, held in one place a bit like a notebook.
+\end{abstract}
+
+\smallskip
+\begin{IEEEkeywords}
+key, word, keyword list
+\end{IEEEkeywords}
+
+\IEEEpeerreviewmaketitle
+
+%\tableofcontents
+
+%\clearpage
+
+\section{Single Taper Design}
+
+
+Classes of band-limited tapers for a spherical cap region are developed in \cite{Wieczorek:2005}.
+
+\subsection{Constraints}
+
+Here we seek a single taper $\taper(\unit{x})$ to use as a spatial-multiplicative window for a region $\R\subset\untsph$ on the sphere.  The sought properties are:
+\begin{enumerate}
+%\item unit energy on the sphere
+%\[
+%\int_{\untsph} \abs{\taper(\unit{x})}^2\,ds(\unit{x}) = 1
+%\]
+\item band-limited to degree $L$, that is,
+\[
+\coeff[\big]{\taper}_{\ell}^{m} = \innerp{\taper}{Y_{\ell}^{m}} = 0,\quad \ell>L,
+\]
+\item high spatial energy concentration, no less than some threshold $\lambda\in(0,1)$, that is,
+\[
+\frac{\displaystyle\int_{\R} \abs{\taper(\unit{x})}^2\,ds(\unit{x})}
+{\displaystyle\int_{\untsph} \abs{\taper(\unit{x})}^2\,ds(\unit{x})} =
+\frac{\norm[\big]{\taper}_{\R}^2}
+{\norm[\big]{\taper}^2}
+\geq \lambda
+\]
+and such functions are referred to as $\lambda$-concentrated
+
+\item close to unity in the region of interest, that is, in some sense close to the characteristic function of the region $\R$
+\[
+\chfn(\unit{x}) =
+\begin{cases}
+1 & \unit{x}\in\R \\
+0 & \text{otherwise}%\unit{x}\in\untsph\setminus\R
+\end{cases}
+\]
+\end{enumerate}
+
+\subsection{Caveats}
+
+\begin{itemize}
+\item
+The threshold $\lambda\in(0,1)$ should not exceed the maximum theoretical spatial concentration. 
+
+\item
+The characteristic function is not band-limited.
+\end{itemize}
+
+
+\subsection{Use of taper}
+
+When performing analysis a signal $f(\unit{x})$ localized to a region $\R$ we propose to use the modified signal
+\[
+\taper(\unit{x})\,f(\unit{x})
+\]
+which tends to concentrates the signal simultaneously in the spatial and spectral domains.
+
+\subsection{Band-limited Slepian functions}
+
+The band-limited Slepian functions for region $\R$ are denoted
+$\varphi_n(\unit{x})$
+with associated real positive eigenvalues $\lambda_n$, $n=1,2,\dotsc$, that is,
+\[
+\int_{\R} \abs{\varphi_n(\unit{x})}^2\,ds(\unit{x}) = \lambda_n.
+\]
+The Slepian functions are ordered in $n$ such that
+\[
+\lambda_n\geq\lambda_{n+1},\quad \forall n.
+\]
+Further the Slepian functions are orthonormal on $\untsph$ and orthogonal on $\R$.
+
+
+\newcommand{\band}{s}
+\newcommand{\bandt}{\band^{\lambda}}
+
+\subsection{Formulation}
+
+If $\band(\unit{x})$ is an $L$-band-limited function then by the completeness of the band-limited Slepian functions we have
+\begin{equation}
+\label{eqn:expan}
+\band(\unit{x}) =
+\sum_{n=1}^\infty \coeff[\big]{\band}_n\,\varphi_n(\unit{x}),
+\end{equation}
+in the sense of convergence in the mean, where
+\begin{equation}
+\label{eqn:coeff}
+\coeff[\big]{\band}_n =
+\innerp{\band}{\varphi_n} =
+\int_{\untsph} \band(\unit{x})\,\conj{\varphi_n(\unit{x})}\,ds(\unit{x})
+\end{equation}
+
+Define $N(\lambda)$ such that
+\begin{equation}
+\label{eqn:lambda}
+\lambda_{n}\geq \lambda \iff n\leq N(\lambda).
+\end{equation}
+Then the truncation
+\begin{equation}
+\label{eqn:expan2}
+\bandt(\unit{x}) =
+\sum_{n=1}^{N(\lambda)} \coeff[\big]{\bandt}_n\,\varphi_n(\unit{x})
+\end{equation}
+is $\lambda$-concentrated because we only use the $\lambda$-concentrated $L$-band-limited Slepian functions:
+\[
+\set[\Big]{\varphi_n(\unit{x})\colon
+\int_{\R}\abs[\big]{\varphi_n(\unit{x})}^2\,ds(\unit{x}) = \lambda_n \geq \lambda}{\vphantom{\sum}}_{n=1}^{N(\lambda)}.
+\]
+That is, by the orthogonality of the Slepian functions on $\R$,
+\begin{align*}
+\norm[\big]{\bandt}_{\R}^2 &= \int_{\R} \abs[\big]{\bandt(\unit{x})}^{2}\,ds(\unit{x}) \\
+&= \sum_{n=1}^{N(\lambda)} \abs[\big]{\coeff[\big]{\bandt}_n}^{2}
+\int_{\R}\abs[\big]{\varphi_n(\unit{x})}^2\,ds(\unit{x}) \\
+&= \sum_{n=1}^{N(\lambda)} \lambda_{n}\,\abs[\big]{\coeff[\big]{\bandt}_n}^{2}
+\geq \lambda\sum_{n=1}^{N(\lambda)}\abs[\big]{\coeff[\big]{\bandt}_n}^{2} = \lambda\, \norm[\big]{\bandt}^2.
+\end{align*}
+
+\subsection{Window Design}
+
+Functions satisfying expansion \eqref{eqn:expan2} form a finite $N(\lambda)$-dimensional space of $\lambda$-concentrated signals with the $\lambda$-concentrated $L$-band-limite Slepian functions as their basis.
+
+Now the objective is to find a suitable $\band(\unit{x})$ that does not ``down-weight and ultimately discard'' the signal in the portions of the region $\R$ \cite{Wieczorek:2005}.  A function that equally weights all parts of the region is $\chi_{\R}^{\vphantom{g}}(\unit{x})$, the characteristic function of the region $\R$.  To obtain the optimal minimum mean square error between the inadmissible $\chi_{\R}^{\vphantom{g}}(\unit{x})$ and the finite $N(\lambda)$-dimensional subspace is through an orthogonal projection,
+\begin{equation}
+\taper(\unit{x}) = \sum_{n=1}^{N(\lambda)} \coeff[\big]{\taper}_n\,\varphi_n(\unit{x})
+\end{equation}
+where
+\begin{align}
+\coeff[\big]{\taper}_n = \innerp{\chi_{\R}^{\vphantom{g}}}{\varphi_n}
+&= \int_{\untsph} \chi_{\R}^{\vphantom{g}}(\unit{x})\, \conj{\varphi_n(\unit{x})}\,ds(\unit{x}) \nonumber \\
+&= \int_{\R} \conj{\varphi_n(\unit{x})}\,ds(\unit{x})
+\end{align}
+
+\bibliography{IEEEabrv,taper}
+
+\end{document}
+
+
