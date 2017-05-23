@@ -17,8 +17,8 @@ if nargin<1
 	deginc=1.0; % default stepsize in degrees
 end
 
-%% Grab MATLAB's built-in world coastline data: coast
-load coast % returns column vectors long and lat in degrees
+%% Grab MATLAB's Mapping Toolbox world coastline data: coast (here we have saved it in coast2.mat so don't need the toolbox)
+load coast2 % returns column vectors long and lat in degrees
 R_main=8296:8604; % mainland Australia; 8604 is the same as 8296
 %R_main=0741:2386;
 R_tas=8623:8645; % Tasmania; 8645 is the same as 8623

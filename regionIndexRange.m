@@ -2,7 +2,7 @@ function regionIndexRange(minCoast)
 if nargin<1
 	minCoast=40;
 end
-load coast
+load coast2
 if ~isnan(lat(end))
 	lat(end+1)=nan;
 	long(end+1)=nan;

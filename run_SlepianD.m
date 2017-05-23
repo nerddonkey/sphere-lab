@@ -55,7 +55,7 @@ switch exampleIndex
 end
 
 %% Populate the N_tot x N_tot Hermitian D matrix (8.27)
-for L_max=5:5:70
+for L_max=15:5:20
 	fprintf('\n@@ L_max: %d\n',L_max)
 	N_tot=(L_max+1)^2;
 	switch exampleIndex
@@ -71,18 +71,18 @@ for L_max=5:5:70
 			end
 	end
 	fprintf('@@ Size of D matrix: %dx%d\n', size(D))
-	
+
 	%% Save the D matrix
 	dataName=sprintf('%s_%04d',[data_folder basename],L_max);
 	save([dataName '.mat'],'L_max','D');
-	
+
 	%% Get spectral eigenstructure
 	[V,lamD]=eig(D); % eigen-structure
 	% stem(flip(diag(lamD))) % plot the eigenvalues
 
 	maxSlepian=1.0;
 
-	for eigindex=0:99;%N_tot-1 % eigenvalue index in descending energy order
+	for eigindex=0:3;%N_tot-1 % eigenvalue index in descending energy order
 		if eigindex>N_tot-1
 			break;
 		end

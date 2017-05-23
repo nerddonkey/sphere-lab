@@ -8,7 +8,7 @@ function run_Globe
 % going from the spectral domain to the spatial domain.
 
 %%
-L_max=2600; % maximum included spherical harmonic degree
+L_max=100; % maximum included spherical harmonic degree 2600
 ntt=max(21,L_max+1); % number of points in theta
 npp=max(41,2*L_max+1); % number of points in phi (here first and last phi are the same)
 bump=0.05;
@@ -108,9 +108,9 @@ for bodyIndex=4:4
 	%% Render movie on osx; needs avconv - get via 'brew install libav'
 	if ~system('which avconv >/dev/null')
 		view(az,el) % set viewpoint
-		for i=0:358
+		for i=0:3 % :358
 			set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
-			rotname=sprintf('%s_%04d',frames_basename,i);
+			rotname=sprintf('%s_%04d',frames_basename,i)
 			camorbit(1.0,0.0); drawnow; saveas(gcf,rotname,'png')
 		end
 		renderMovWithAvconv=sprintf(...

@@ -21,7 +21,7 @@ if nargin<1
 end
 
 %% Grab MATLAB's built-in world coastline data: coast
-load coast % returns column vectors long and lat in degrees
+load coast2 % returns column vectors long and lat in degrees
 
 %% Extract "island" subvectors and convert to colatitude and longitude (in degrees)
 
