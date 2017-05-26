@@ -67,9 +67,9 @@ for bodyIndex=4:4
 	end
 
 	%% Figure and data output directores
-	base=userpath;  base(end)='/'; % ~/Documents/MATLAB
-	figs_folder=[base 'figs/'];
-	frames_basename=sprintf('%s_%04d',[base 'frames/' name],L_max);
+	base=strrep(userpath,':',''); % ~/Documents/MATLAB (matlab changed behavior in 2016)
+	figs_folder=[base '/figs/'];
+	frames_basename=sprintf('%s_%04d',[base '/frames/' name],L_max);
 	figs_basename=sprintf('%s_%04d',[figs_folder name],L_max);
 
 	%% Save spatial data
@@ -108,9 +108,10 @@ for bodyIndex=4:4
 	%% Render movie on osx; needs avconv - get via 'brew install libav'
 	if ~system('which avconv >/dev/null')
 		view(az,el) % set viewpoint
-		for i=0:3 % :358
+		for i=0:358 % :358
 			set(gcf,'PaperUnits','inches','PaperPosition',[0 0 6 6]) %150dpi
-			rotname=sprintf('%s_%04d',frames_basename,i)
+			rotname=sprintf('%s_%04d',frames_basename,i);
+			disp(rotname);
 			camorbit(1.0,0.0); drawnow; saveas(gcf,rotname,'png')
 		end
 		renderMovWithAvconv=sprintf(...

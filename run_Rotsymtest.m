@@ -33,7 +33,7 @@ w_mu=zeros(N_tot,1); % 1D coeffs initially filled with zeros
 theta_mu=0.55*pi;
 phi_mu=3.5*pi;
 
-kappa_mu=90; % pointiness
+kappa_mu=140; % pointiness
 lambda_mu=exp(-ll.*(ll+1)/(2*kappa_mu)) % Gauss-Weierstrass kernel
 
 % use formula to determine the SH coefficients of mu component
@@ -48,9 +48,9 @@ end
 w=2.0*w_eta+1.0*w_mu; % some superposition
 
 %% determine spatial samples on mesh
-deginc=3.0;
+deginc=2.0;
 tv=(0:deginc:180)*pi/180;
-pv=(-30:deginc:330)*pi/180;
+pv=(-30:deginc:330)*pi/180;	
 [w_spatial,theta,phi]=ishtRectGrid(w,tv,pv,true);
 
 %% do plot
@@ -68,3 +68,6 @@ s=spatialPlot(Ylm,theta,phi,bump_height,ref_sphere,plottype);
 s.EdgeColor='black'; % 'none'
 fig=gcf;
 fig.Name=name;
+fig.Position(3)=600;
+fig.Position(4)=500;
+alpha 0.8
